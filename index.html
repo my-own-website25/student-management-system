@@ -3,353 +3,657 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>School Management System</title>
+    <title>Shariar's Medical Academy</title>
+    <!-- Tailwind CSS for styling -->
     <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts: Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" xintegrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <!-- SheetJS for Excel Export -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <style>
         body {
             font-family: 'Inter', sans-serif;
+            background-color: #f1f5f9; /* slate-100 */
         }
-        .sidebar {
-            transition: transform 0.3s ease-in-out;
+        .custom-scrollbar::-webkit-scrollbar { width: 8px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: #e2e8f0; } /* slate-200 */
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #94a3b8; border-radius: 4px; } /* slate-400 */
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #64748b; } /* slate-500 */
+        
+        .tab-active {
+            border-bottom-color: #0284c7; /* sky-600 */
+            color: #0284c7; /* sky-600 */
         }
-        .main-content {
-            transition: margin-left 0.3s ease-in-out;
+        .accordion-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease-in-out;
         }
-        .menu-item.active {
-            background-color: #4f46e5; /* Indigo 600 */
-            color: white;
-            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
-        }
+        /* Styles for correct/incorrect answers */
+        .correct-answer { background-color: #dcfce7; border-left: 4px solid #22c55e; }
+        .incorrect-answer { background-color: #fee2e2; border-left: 4px solid #ef4444; }
+        .selected-answer { box-shadow: 0 0 0 2px #0ea5e9; } /* sky-500 */
+
+        /* Modal Animation */
         .modal {
-            display: none; /* Hidden by default */
-            position: fixed; /* Stay in place */
-            z-index: 50; /* Sit on top */
-            left: 0;
-            top: 0;
-            width: 100%; /* Full width */
-            height: 100%; /* Full height */
-            overflow: auto; /* Enable scroll if needed */
-            background-color: rgba(0,0,0,0.5); /* Black w/ opacity */
-            backdrop-filter: blur(4px);
+            transition: opacity 0.3s ease, transform 0.3s ease;
         }
-        .modal-content {
-            background-color: #fefefe;
-            margin: 5% auto;
-            padding: 2rem;
-            border: 1px solid #888;
-            width: 90%;
-            max-width: 600px;
-            border-radius: 0.5rem;
-            box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
-            animation: slide-down 0.3s ease-out;
-        }
-        @keyframes slide-down {
-            from {
-                transform: translateY(-30px);
-                opacity: 0;
-            }
-            to {
-                transform: translateY(0);
-                opacity: 1;
-            }
-        }
-        /* Styles for the exam taking screen */
-        #exam-taking-screen, #exam-results-screen {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: #eef2ff; /* Indigo 50 */
-            z-index: 100;
-            overflow-y: auto;
+        .modal.hidden {
+            opacity: 0;
+            transform: scale(0.95);
+            pointer-events: none;
         }
     </style>
 </head>
-<body class="bg-slate-100">
+<body class="text-slate-800 flex flex-col items-center justify-center min-h-screen py-8">
 
-    <!-- Login Screen -->
-    <div id="login-screen" class="flex items-center justify-center h-screen bg-slate-900">
-        <div class="w-full max-w-md p-8 space-y-8 bg-white rounded-lg shadow-lg">
-            <div class="text-center">
-                 <i class="fas fa-school text-4xl text-indigo-600"></i>
-                <h2 class="mt-4 text-3xl font-bold text-gray-900">SMA Pro Login</h2>
-                <p class="mt-2 text-sm text-gray-600">Select your role to continue</p>
+    <div class="w-full max-w-6xl mx-auto p-4">
+
+        <!-- Main Landing View -->
+        <div id="mainView" class="view bg-white p-8 rounded-xl shadow-xl text-center max-w-md mx-auto">
+            <h1 class="text-3xl font-bold mb-2 text-slate-900">Shariar's Medical Academy</h1>
+            <p class="text-slate-600 mb-8">Select your portal to continue.</p>
+            <div class="flex flex-col space-y-4">
+                <button onclick="showView('adminAuthView')" class="w-full bg-sky-600 text-white font-semibold py-3 px-4 rounded-lg hover:bg-sky-700 transition-all duration-300 transform hover:scale-105">Admin Portal</button>
+                <button onclick="showView('studentLoginView')" class="w-full bg-slate-700 text-white font-semibold py-3 px-4 rounded-lg hover:bg-slate-800 transition-all duration-300 transform hover:scale-105">Student Portal</button>
             </div>
-            <form id="login-form" class="space-y-6">
-                <div>
-                    <label for="email-login" class="block text-sm font-medium text-gray-700">Email</label>
-                    <input type="email" id="email-login" class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500" placeholder="admin@school.com or S001@school.com" required>
-                </div>
-                <div>
-                    <label for="password-input" class="block text-sm font-medium text-gray-700">Password</label>
-                    <input type="password" id="password-input" class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500" required>
-                </div>
-                <div>
-                    <button type="submit" class="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
-                        Login
-                    </button>
-                </div>
-                 <p id="login-error" class="text-sm text-red-600 text-center"></p>
+        </div>
+        
+        <!-- Admin Auth Views -->
+        <div id="adminAuthView" class="view hidden bg-white p-8 rounded-xl shadow-xl text-center max-w-md mx-auto">
+            <button onclick="showView('mainView')" class="text-sky-600 hover:text-sky-800 mb-4 text-left w-full">&larr; Back</button>
+            <h2 class="text-2xl font-bold mb-6">Admin Portal</h2>
+            <div class="flex flex-col space-y-4">
+                <button onclick="showView('adminLoginView')" class="w-full bg-sky-500 text-white font-semibold py-3 px-4 rounded-lg hover:bg-sky-600 transition-all duration-300">Login</button>
+            </div>
+        </div>
+        <div id="adminLoginView" class="view hidden bg-white p-8 rounded-xl shadow-xl max-w-md mx-auto">
+            <button onclick="showView('adminAuthView')" class="text-sky-600 hover:text-sky-800 mb-4">&larr; Back</button>
+            <h2 class="text-2xl font-bold mb-6 text-center">Admin Login</h2>
+            <form id="adminLoginForm" class="space-y-6">
+                <input type="email" id="adminLoginEmail" placeholder="Email" required class="mt-1 block w-full px-3 py-2 border border-slate-300 rounded-md focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-sky-500">
+                <input type="password" id="adminLoginPassword" placeholder="Password" required class="mt-1 block w-full px-3 py-2 border border-slate-300 rounded-md focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-sky-500">
+                <button type="submit" class="w-full flex justify-center py-3 px-4 rounded-lg text-white bg-sky-600 hover:bg-sky-700 transition-colors">Login</button>
             </form>
+            <div id="adminLoginFeedback" class="mt-4 text-center text-red-600 font-medium"></div>
         </div>
-    </div>
-
-
-    <!-- Main App Container (Admin Panel) -->
-    <div id="admin-panel" class="hidden h-screen">
-        <div class="flex h-full">
-            <!-- Sidebar -->
-            <aside id="sidebar" class="w-64 bg-slate-900 text-slate-300 flex flex-col fixed h-full sidebar">
-                <div class="px-6 py-5 border-b border-slate-700 flex items-center gap-3"><i class="fas fa-school text-2xl text-indigo-400"></i><h1 class="text-xl font-bold text-white">Admin Panel</h1></div>
-                <nav class="flex-1 px-4 py-4 space-y-2">
-                    <a href="#" class="menu-item flex items-center px-4 py-2 rounded-md hover:bg-slate-700 active" data-target="dashboard"><i class="fas fa-tachometer-alt w-6"></i><span>Dashboard</span></a>
-                    <a href="#" class="menu-item flex items-center px-4 py-2 rounded-md hover:bg-slate-700" data-target="students"><i class="fas fa-user-graduate w-6"></i><span>Students</span></a>
-                    <a href="#" class="menu-item flex items-center px-4 py-2 rounded-md hover:bg-slate-700" data-target="teachers"><i class="fas fa-chalkboard-teacher w-6"></i><span>Teachers</span></a>
-                    <a href="#" class="menu-item flex items-center px-4 py-2 rounded-md hover:bg-slate-700" data-target="academics"><i class="fas fa-book w-6"></i><span>Academics</span></a>
-                    <a href="#" class="menu-item flex items-center px-4 py-2 rounded-md hover:bg-slate-700" data-target="exams"><i class="fas fa-file-alt w-6"></i><span>Exams</span></a>
-                    <a href="#" class="menu-item flex items-center px-4 py-2 rounded-md hover:bg-slate-700" data-target="attendance"><i class="fas fa-user-check w-6"></i><span>Attendance</span></a>
-                    <a href="#" class="menu-item flex items-center px-4 py-2 rounded-md hover:bg-slate-700" data-target="accounts"><i class="fas fa-money-bill-wave w-6"></i><span>Accounts</span></a>
+        
+        <!-- Admin Dashboard View -->
+        <div id="adminDashboardView" class="view hidden bg-white p-8 rounded-xl shadow-xl">
+            <div class="flex justify-between items-center mb-4 border-b border-slate-200 pb-4">
+                 <h2 class="text-2xl font-bold text-slate-900">Admin Dashboard</h2>
+                 <button onclick="logoutAdmin()" class="text-sm text-sky-600 hover:text-sky-800 font-semibold">Logout</button>
+            </div>
+            
+            <!-- Tabs -->
+            <div class="border-b border-slate-200">
+                <nav class="-mb-px flex space-x-8" aria-label="Tabs">
+                    <button onclick="switchTab('studentManagementTab', this)" class="admin-tab whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm tab-active">Students</button>
+                    <button onclick="switchTab('batchManagementTab', this)" class="admin-tab whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm text-slate-500">Batches</button>
+                    <button onclick="switchTab('contentManagementTab', this)" class="admin-tab whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm text-slate-500">Content</button>
+                    <button onclick="switchTab('examManagementTab', this)" class="admin-tab whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm text-slate-500">Exams</button>
                 </nav>
-                <div class="px-6 py-4 border-t border-slate-700"><a href="#" id="logout-btn-admin" class="flex items-center px-4 py-2 rounded-md hover:bg-slate-700"><i class="fas fa-sign-out-alt w-6"></i><span>Logout</span></a></div>
-            </aside>
+            </div>
 
-            <!-- Main Content -->
-            <main id="main-content" class="flex-1 ml-64 p-6 md:p-8 overflow-y-auto">
-                <button id="menu-toggle" class="md:hidden mb-4 p-2 rounded-md bg-white text-slate-800 shadow"><i class="fas fa-bars"></i></button>
-                <!-- Admin sections go here -->
-                <section id="dashboard" class="content-section"><h2 class="text-3xl font-bold mb-6 text-slate-800">Admin Dashboard</h2><div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6"><div class="bg-white p-6 rounded-lg shadow-md border-t-4 border-indigo-500"><div class="flex items-center justify-between"><div><p class="text-slate-500">Total Students</p><p id="total-students" class="text-3xl font-bold text-slate-700">0</p></div><i class="fas fa-user-graduate text-4xl text-indigo-400"></i></div></div><div class="bg-white p-6 rounded-lg shadow-md border-t-4 border-green-500"><div class="flex items-center justify-between"><div><p class="text-slate-500">Total Teachers</p><p id="total-teachers" class="text-3xl font-bold text-slate-700">0</p></div><i class="fas fa-chalkboard-teacher text-4xl text-green-400"></i></div></div><div class="bg-white p-6 rounded-lg shadow-md border-t-4 border-amber-500"><div class="flex items-center justify-between"><div><p class="text-slate-500">Total Revenue</p><p id="total-revenue" class="text-3xl font-bold text-slate-700">৳0</p></div><i class="fas fa-wallet text-4xl text-amber-400"></i></div></div><div class="bg-white p-6 rounded-lg shadow-md border-t-4 border-red-500"><div class="flex items-center justify-between"><div><p class="text-slate-500">Total Expenses</p><p id="total-expenses" class="text-3xl font-bold text-slate-700">৳0</p></div><i class="fas fa-file-invoice-dollar text-4xl text-red-400"></i></div></div></div></section>
-                <section id="students" class="content-section hidden"><h2 class="text-3xl font-bold mb-6 text-slate-800">Student Management</h2><div class="bg-white p-6 rounded-lg shadow-md"><div class="flex justify-between items-center mb-4"><h3 class="text-xl font-semibold text-slate-700">All Students</h3><button id="add-student-btn" class="bg-indigo-600 text-white px-4 py-2 rounded-md hover:bg-indigo-700 shadow hover:shadow-lg transition">Add Student</button></div><div class="overflow-x-auto"><table class="w-full text-left text-slate-600"><thead><tr class="bg-slate-200 text-slate-800"><th class="p-3">ID</th><th class="p-3">Name</th><th class="p-3">Class</th><th class="p-3">Created On</th><th class="p-3">Actions</th></tr></thead><tbody id="student-list"></tbody></table></div></div></section>
-                <section id="teachers" class="content-section hidden"><h2 class="text-3xl font-bold mb-6 text-slate-800">Teacher Management</h2><div class="bg-white p-6 rounded-lg shadow-md"><div class="flex justify-between items-center mb-4"><h3 class="text-xl font-semibold text-slate-700">All Teachers</h3><button id="add-teacher-btn" class="bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700 shadow hover:shadow-lg transition">Add Teacher</button></div><div class="overflow-x-auto"><table class="w-full text-left text-slate-600"><thead><tr class="bg-slate-200 text-slate-800"><th class="p-3">ID</th><th class="p-3">Name</th><th class="p-3">Subject</th><th class="p-3">Contact</th><th class="p-3">Actions</th></tr></thead><tbody id="teacher-list"></tbody></table></div></div></section>
-                <section id="academics" class="content-section hidden"><h2 class="text-3xl font-bold mb-6 text-slate-800">Academics</h2><div class="grid grid-cols-1 md:grid-cols-2 gap-6"><div class="bg-white p-6 rounded-lg shadow-md"><h3 class="text-xl font-semibold mb-4 text-slate-700">Manage Classes</h3><form id="add-class-form" class="flex gap-2 mb-4"><input type="text" id="class-name-input" placeholder="Class Name (e.g., Class 6)" class="flex-grow p-2 border rounded-md focus:ring-2 focus:ring-indigo-500"><button type="submit" class="bg-indigo-600 text-white px-4 py-2 rounded-md hover:bg-indigo-700">Add</button></form><ul id="class-list" class="space-y-2"></ul></div><div class="bg-white p-6 rounded-lg shadow-md"><h3 class="text-xl font-semibold mb-4 text-slate-700">Manage Subjects</h3><form id="add-subject-form" class="flex gap-2 mb-4"><input type="text" id="subject-name-input" placeholder="Subject Name (e.g., Mathematics)" class="flex-grow p-2 border rounded-md focus:ring-2 focus:ring-green-500"><button type="submit" class="bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700">Add</button></form><ul id="subject-list" class="space-y-2"></ul></div></div></section>
-                <section id="exams" class="content-section hidden"><h2 class="text-3xl font-bold mb-6 text-slate-800">Mock Exam System</h2><div class="bg-white p-6 rounded-lg shadow-md"><div class="flex justify-between items-center mb-4"><h3 class="text-xl font-semibold text-slate-700">All Exams</h3><button id="add-exam-btn" class="bg-indigo-600 text-white px-4 py-2 rounded-md hover:bg-indigo-700 shadow hover:shadow-lg transition">Create Exam</button></div><div class="overflow-x-auto"><table class="w-full text-left text-slate-600"><thead><tr class="bg-slate-200 text-slate-800"><th class="p-3">Exam Title</th><th class="p-3">Class</th><th class="p-3">Date</th><th class="p-3">Passing Mark</th><th class="p-3">Questions</th><th class="p-3">Actions</th></tr></thead><tbody id="exam-list"></tbody></table></div></div></section>
-                <section id="attendance" class="content-section hidden"><h2 class="text-3xl font-bold mb-6 text-slate-800">Attendance</h2><div class="bg-white p-6 rounded-lg shadow-md"><div class="flex flex-wrap gap-4 mb-4 items-center"><select id="attendance-class-filter" class="p-2 border rounded-md"></select><input type="date" id="attendance-date" class="p-2 border rounded-md"><button id="fetch-attendance-btn" class="bg-indigo-600 text-white px-4 py-2 rounded-md hover:bg-indigo-700">Fetch Students</button></div><div class="overflow-x-auto"><table class="w-full text-left text-slate-600"><thead><tr class="bg-slate-200 text-slate-800"><th class="p-3">Student ID</th><th class="p-3">Student Name</th><th class="p-3">Status</th></tr></thead><tbody id="attendance-list"></tbody></table><button id="save-attendance-btn" class="mt-4 bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700 hidden">Save Attendance</button></div></div></section>
-                <section id="accounts" class="content-section hidden"><h2 class="text-3xl font-bold mb-6 text-slate-800">Accounts</h2><div class="grid grid-cols-1 md:grid-cols-2 gap-6"><div class="bg-white p-6 rounded-lg shadow-md"><h3 class="text-xl font-semibold mb-4 text-slate-700">Fee Collection</h3><form id="add-fee-form"><div class="mb-4"><label for="fee-student-id" class="block mb-1 text-slate-600">Student ID</label><input type="text" id="fee-student-id" class="w-full p-2 border rounded-md" placeholder="Enter Student ID"></div><div class="mb-4"><label for="fee-amount" class="block mb-1 text-slate-600">Amount (BDT)</label><input type="number" id="fee-amount" class="w-full p-2 border rounded-md" placeholder="e.g., 5000"></div><button type="submit" class="w-full bg-indigo-600 text-white px-4 py-2 rounded-md hover:bg-indigo-700">Collect Fee</button></form></div><div class="bg-white p-6 rounded-lg shadow-md"><h3 class="text-xl font-semibold mb-4 text-slate-700">Expense Management</h3><form id="add-expense-form"><div class="mb-4"><label for="expense-title" class="block mb-1 text-slate-600">Expense Title</label><input type="text" id="expense-title" class="w-full p-2 border rounded-md" placeholder="e.g., Electricity Bill"></div><div class="mb-4"><label for="expense-amount" class="block mb-1 text-slate-600">Amount (BDT)</label><input type="number" id="expense-amount" class="w-full p-2 border rounded-md" placeholder="e.g., 10000"></div><button type="submit" class="w-full bg-red-600 text-white px-4 py-2 rounded-md hover:bg-red-700">Add Expense</button></form></div></div><div class="bg-white p-6 rounded-lg shadow-md mt-6"><h3 class="text-xl font-semibold mb-4 text-slate-700">Transaction History</h3><div class="overflow-x-auto"><table class="w-full text-left text-slate-600"><thead><tr class="bg-slate-200 text-slate-800"><th class="p-3">Date</th><th class="p-3">Description</th><th class="p-3">Type</th><th class="p-3">Amount (BDT)</th></tr></thead><tbody id="transaction-list"></tbody></table></div></div></section>
-            </main>
-        </div>
-    </div>
-    
-    <!-- Student Portal -->
-    <div id="student-portal" class="hidden h-screen">
-         <div class="flex h-full">
-            <aside class="w-64 bg-slate-900 text-slate-300 flex flex-col fixed h-full">
-                <div class="px-6 py-5 border-b border-slate-700 flex items-center gap-3"><i class="fas fa-user-graduate text-2xl text-indigo-400"></i><h1 class="text-xl font-bold text-white">Student Portal</h1></div>
-                <nav class="flex-1 px-4 py-4 space-y-2">
-                    <a href="#" class="student-menu-item flex items-center px-4 py-2 rounded-md hover:bg-slate-700 active" data-target="student-dashboard"><i class="fas fa-tachometer-alt w-6"></i><span>Dashboard</span></a>
-                    <a href="#" class="student-menu-item flex items-center px-4 py-2 rounded-md hover:bg-slate-700" data-target="student-exams"><i class="fas fa-file-alt w-6"></i><span>My Exams</span></a>
-                </nav>
-                 <div class="px-6 py-4 border-t border-slate-700"><a href="#" id="logout-btn-student" class="flex items-center px-4 py-2 rounded-md hover:bg-slate-700"><i class="fas fa-sign-out-alt w-6"></i><span>Logout</span></a></div>
-            </aside>
-            <main class="flex-1 ml-64 p-6 md:p-8 overflow-y-auto">
-                <section id="student-dashboard" class="student-content-section"><h2 class="text-3xl font-bold mb-2 text-slate-800">Welcome, <span id="student-welcome-name">Student</span>!</h2><p class="mb-6 text-slate-600">Here's a summary of your upcoming activities.</p><div class="grid grid-cols-1 md:grid-cols-2 gap-6"><div class="bg-white p-6 rounded-lg shadow-md border-t-4 border-indigo-500"><div class="flex items-center justify-between"><div><p class="text-slate-500">Upcoming Exams</p><p id="student-upcoming-exams" class="text-3xl font-bold text-slate-700">0</p></div><i class="fas fa-file-signature text-4xl text-indigo-400"></i></div></div></div></section>
-                <section id="student-exams" class="student-content-section hidden"><h2 class="text-3xl font-bold mb-6 text-slate-800">My Exams</h2><div id="student-exam-list" class="space-y-4"></div></section>
-            </main>
-        </div>
-    </div>
+            <!-- Student Management Tab Content -->
+            <div id="studentManagementTab" class="tab-content mt-8">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <!-- Left Column: Create Students -->
+                    <div class="space-y-6">
+                        <form id="adminForm" class="space-y-4 p-4 border border-slate-200 rounded-lg bg-slate-50">
+                            <h3 class="text-lg font-medium text-slate-900">Create New Student</h3>
+                            <input type="text" id="studentName" placeholder="Student Name" required class="mt-1 block w-full px-3 py-2 border border-slate-300 rounded-md focus:outline-none focus:ring-2 focus:ring-sky-500">
+                            <input type="email" id="studentEmail" placeholder="Student Email" required class="mt-1 block w-full px-3 py-2 border border-slate-300 rounded-md focus:outline-none focus:ring-2 focus:ring-sky-500">
+                            <select id="studentBatch" required class="mt-1 block w-full px-3 py-2 border border-slate-300 bg-white rounded-md focus:outline-none focus:ring-2 focus:ring-sky-500"><option value="">Assign to Batch</option></select>
+                            <select id="paymentStatus" required class="mt-1 block w-full px-3 py-2 border border-slate-300 bg-white rounded-md focus:outline-none focus:ring-2 focus:ring-sky-500">
+                                <option value="">Select Payment Status</option>
+                                <option value="not-paid">Not Paid</option>
+                                <option value="first-installment">First Installment</option>
+                                <option value="one-time">One Time Payment</option>
+                                <option value="paid">Paid</option>
+                            </select>
+                            <input type="text" id="paymentAmount" placeholder="Amount (e.g., 250 USD)" required class="mt-1 block w-full px-3 py-2 border border-slate-300 rounded-md focus:outline-none focus:ring-2 focus:ring-sky-500">
+                            <div>
+                                <label for="paymentDate" class="text-sm font-medium text-slate-700">Payment Date</label>
+                                <input type="date" id="paymentDate" required class="mt-1 block w-full px-3 py-2 border border-slate-300 rounded-md focus:outline-none focus:ring-2 focus:ring-sky-500">
+                            </div>
+                            <button type="submit" class="w-full flex justify-center py-3 px-4 rounded-lg text-white bg-sky-600 hover:bg-sky-700 transition-colors">Create Student</button>
+                        </form>
+                        <div id="adminFeedback" class="mt-4 text-center"></div>
+                    </div>
 
-    <!-- Exam Taking Screen -->
-    <div id="exam-taking-screen" class="hidden">
-        <div class="flex flex-col h-full">
-            <header class="bg-white shadow-md p-4 flex justify-between items-center">
-                <h2 id="exam-header-title" class="text-xl font-bold text-slate-800"></h2>
-                <div class="text-lg font-bold text-red-600 bg-red-100 px-4 py-2 rounded-md">
-                    <i class="fas fa-clock"></i>
-                    <span id="exam-timer">00:00</span>
-                </div>
-            </header>
-            <div class="flex-1 p-8 overflow-y-auto">
-                <div class="max-w-4xl mx-auto bg-white p-8 rounded-lg shadow-lg">
-                    <h3 class="text-lg font-semibold text-slate-600 mb-2">Question <span id="current-q-number">1</span> of <span id="total-q-number">10</span></h3>
-                    <p id="question-text" class="text-xl text-slate-900 mb-4"></p>
-                    <img id="question-image" src="" alt="Question Image" class="my-4 rounded-lg max-h-80 hidden" onerror="this.style.display='none'">
-                    <div id="options-container" class="space-y-3"></div>
+                    <!-- Right Column: Student List & Search -->
+                    <div class="space-y-4">
+                        <div class="flex space-x-2">
+                            <input type="text" id="searchInput" placeholder="Search..." class="block w-full px-3 py-2 border border-slate-300 rounded-md focus:outline-none focus:ring-2 focus:ring-sky-500">
+                            <select id="searchType" class="block w-48 px-3 py-2 border border-slate-300 bg-white rounded-md focus:outline-none focus:ring-2 focus:ring-sky-500">
+                                <option value="name">By Name</option>
+                                <option value="email">By Email</option>
+                                <option value="batch">By Batch</option>
+                            </select>
+                        </div>
+                        <div id="studentList" class="h-96 overflow-y-auto custom-scrollbar bg-slate-100 p-3 rounded-lg border border-slate-200"></div>
+                    </div>
                 </div>
             </div>
-            <footer class="bg-white p-4 flex justify-between items-center border-t">
-                <button id="prev-q-btn" class="px-6 py-2 rounded-md bg-slate-300 hover:bg-slate-400">Previous</button>
-                <button id="submit-exam-btn" class="px-6 py-2 rounded-md bg-red-600 text-white hover:bg-red-700">Submit Exam</button>
-                <button id="next-q-btn" class="px-6 py-2 rounded-md bg-indigo-600 text-white hover:bg-indigo-700">Next</button>
-            </footer>
+
+            <!-- Batch Management Tab Content -->
+            <div id="batchManagementTab" class="tab-content hidden mt-8">
+                 <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <!-- Left Column: Create Batch & Export -->
+                    <div class="space-y-8">
+                        <div class="space-y-4 p-4 border border-slate-200 rounded-lg bg-slate-50 h-fit">
+                            <h3 class="text-lg font-medium text-slate-900">Create New Batch</h3>
+                            <form id="batchForm" class="flex items-center space-x-2">
+                                <input type="text" id="batchName" placeholder="Batch Name (e.g., Course D)" required class="block w-full px-3 py-2 border border-slate-300 rounded-md focus:outline-none focus:ring-2 focus:ring-sky-500">
+                                <button type="submit" class="px-4 py-2 text-sm font-medium text-white bg-sky-600 rounded-lg hover:bg-sky-700 transition-colors">Create</button>
+                            </form>
+                            <div id="batchFeedback" class="text-sm mt-2"></div>
+                        </div>
+                        <div class="space-y-4 p-4 border border-slate-200 rounded-lg bg-slate-50 h-fit">
+                            <h3 class="text-lg font-medium text-slate-900">Export Batch Data</h3>
+                            <div class="flex items-center space-x-2">
+                                <select id="exportBatchSelect" class="block w-full px-3 py-2 border border-slate-300 bg-white rounded-md focus:outline-none focus:ring-2 focus:ring-sky-500"><option value="">Select a Batch</option></select>
+                                <button id="exportBtn" class="px-4 py-2 text-sm font-medium text-white bg-green-600 rounded-lg hover:bg-green-700 transition-colors">Download Excel</button>
+                            </div>
+                            <div id="exportFeedback" class="text-sm mt-2"></div>
+                        </div>
+                    </div>
+                    <!-- Right Column: Batch List -->
+                    <div class="space-y-4">
+                        <h3 class="text-lg font-medium text-slate-900">All Batches</h3>
+                        <div id="batchList" class="h-[28rem] overflow-y-auto custom-scrollbar bg-slate-100 p-3 rounded-lg border border-slate-200"></div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Content Management Tab -->
+            <div id="contentManagementTab" class="tab-content hidden mt-8">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <!-- Announcements -->
+                    <div class="space-y-4 p-4 border border-slate-200 rounded-lg bg-slate-50">
+                        <h3 class="text-lg font-medium text-slate-900">Announcements</h3>
+                        <form id="announcementForm" class="space-y-3">
+                            <input type="text" id="announcementTitle" placeholder="Announcement Title" required class="block w-full px-3 py-2 border border-slate-300 rounded-md focus:outline-none focus:ring-2 focus:ring-sky-500">
+                            <select id="announcementBatchSelect" class="block w-full px-3 py-2 border border-slate-300 bg-white rounded-md focus:outline-none focus:ring-2 focus:ring-sky-500"><option value="all">All Batches</option></select>
+                            <textarea id="announcementContent" placeholder="Announcement Details..." required rows="4" class="block w-full px-3 py-2 border border-slate-300 rounded-md focus:outline-none focus:ring-2 focus:ring-sky-500"></textarea>
+                            <button type="submit" class="w-full py-2 px-4 rounded-lg text-white bg-sky-600 hover:bg-sky-700 transition-colors">Post Announcement</button>
+                        </form>
+                        <div id="announcementFeedback" class="text-sm"></div>
+                        <div id="announcementListAdmin" class="h-60 overflow-y-auto custom-scrollbar space-y-2"></div>
+                    </div>
+                    <!-- Class Routines -->
+                    <div class="space-y-4 p-4 border border-slate-200 rounded-lg bg-slate-50">
+                        <h3 class="text-lg font-medium text-slate-900">Class Routines</h3>
+                        <form id="routineForm" class="space-y-3">
+                            <select id="routineBatchSelect" required class="block w-full px-3 py-2 border border-slate-300 bg-white rounded-md focus:outline-none focus:ring-2 focus:ring-sky-500"><option value="">Select a Batch</option></select>
+                            <textarea id="routineContent" placeholder="Enter routine details or a link to an image/PDF..." required rows="6" class="block w-full px-3 py-2 border border-slate-300 rounded-md focus:outline-none focus:ring-2 focus:ring-sky-500"></textarea>
+                            <button type="submit" class="w-full py-2 px-4 rounded-lg text-white bg-sky-600 hover:bg-sky-700 transition-colors">Set Routine</button>
+                        </form>
+                        <div id="routineFeedback" class="text-sm"></div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Exam Management Tab -->
+            <div id="examManagementTab" class="tab-content hidden mt-8">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <!-- Create Exam Form -->
+                    <div class="space-y-4 p-4 border border-slate-200 rounded-lg bg-slate-50">
+                        <h3 class="text-lg font-medium text-slate-900">Create New Mock Exam</h3>
+                        <form id="examForm" class="space-y-4">
+                            <input type="text" id="examTitle" placeholder="Exam Title" required class="block w-full px-3 py-2 border border-slate-300 rounded-md focus:outline-none focus:ring-2 focus:ring-sky-500">
+                            <div class="grid grid-cols-2 gap-4">
+                                <select id="examBatch" required class="block w-full px-3 py-2 border border-slate-300 bg-white rounded-md focus:outline-none focus:ring-2 focus:ring-sky-500"><option value="">Assign to Batch</option></select>
+                                <input type="number" id="examDuration" placeholder="Duration (minutes)" required class="block w-full px-3 py-2 border border-slate-300 rounded-md focus:outline-none focus:ring-2 focus:ring-sky-500">
+                            </div>
+                            <input type="number" id="examPassPercent" placeholder="Pass Percentage %" required min="1" max="100" class="block w-full px-3 py-2 border border-slate-300 rounded-md focus:outline-none focus:ring-2 focus:ring-sky-500">
+                            
+                            <div class="border-t border-slate-200 pt-4">
+                                <h4 class="font-medium text-slate-800 mb-2">Questions</h4>
+                                <div id="questionsContainer" class="space-y-4">
+                                    <!-- Questions will be added here dynamically -->
+                                </div>
+                                <button type="button" onclick="addQuestion()" class="mt-4 text-sm text-sky-600 hover:text-sky-800 font-semibold">+ Add Question</button>
+                            </div>
+                            
+                            <button type="submit" class="w-full py-3 px-4 rounded-lg text-white bg-sky-600 hover:bg-sky-700 transition-colors">Create Exam</button>
+                        </form>
+                        <div id="examFeedback" class="text-sm mt-2"></div>
+                    </div>
+                    <!-- Existing Exams List -->
+                    <div class="space-y-4">
+                        <h3 class="text-lg font-medium text-slate-900">Existing Exams</h3>
+                        <div id="examListAdmin" class="h-[32rem] overflow-y-auto custom-scrollbar bg-slate-100 p-3 rounded-lg border border-slate-200"></div>
+                    </div>
+                </div>
+            </div>
         </div>
+
+        <!-- Student Portal Views -->
+        <div id="studentLoginView" class="view hidden bg-white p-8 rounded-xl shadow-xl max-w-md mx-auto">
+            <button onclick="showView('mainView')" class="text-sky-600 hover:text-sky-800 mb-4">&larr; Back</button>
+            <h2 class="text-2xl font-bold mb-6 text-center">Student Portal Login</h2>
+            <form id="studentLoginForm" class="space-y-4">
+                <input type="text" id="studentId" placeholder="Enter Your Unique ID" required class="mt-1 block w-full px-3 py-2 border border-slate-300 rounded-md focus:outline-none focus:ring-2 focus:ring-sky-500">
+                <button type="submit" class="w-full flex justify-center py-3 px-4 rounded-lg text-white bg-slate-700 hover:bg-slate-800 transition-colors">Login</button>
+            </form>
+            <div id="studentLoginError" class="mt-4 text-center text-red-600 font-medium"></div>
+        </div>
+        <div id="studentDashboardView" class="view hidden bg-white p-8 rounded-xl shadow-xl max-w-3xl mx-auto">
+            <div class="flex justify-between items-center mb-4">
+                <h2 class="text-2xl font-bold">Welcome, <span id="studentNameHeader"></span>!</h2>
+                <button onclick="logoutStudent()" class="text-sm text-sky-600 hover:text-sky-800 font-semibold">Logout</button>
+            </div>
+            <!-- Student Tabs -->
+            <div class="border-b border-slate-200">
+                <nav class="-mb-px flex space-x-8" aria-label="Tabs">
+                    <button onclick="switchStudentTab('studentProfileTab', this)" class="student-tab whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm tab-active">Profile</button>
+                    <button onclick="switchStudentTab('studentAnnouncementsTab', this)" class="student-tab whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm text-slate-500">Announcements</button>
+                    <button onclick="switchStudentTab('studentRoutineTab', this)" class="student-tab whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm text-slate-500">Class Routine</button>
+                    <button onclick="switchStudentTab('studentExamsTab', this)" class="student-tab whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm text-slate-500">Mock Exams</button>
+                </nav>
+            </div>
+            <!-- Student Profile Tab -->
+            <div id="studentProfileTab" class="student-tab-content mt-8">
+                <div class="space-y-4 bg-slate-50 p-6 rounded-lg border border-slate-200">
+                    <p><strong class="text-slate-500 w-24 inline-block">Name:</strong> <span id="dashboardStudentName">-</span></p>
+                    <p><strong class="text-slate-500 w-24 inline-block">Batch:</strong> <span id="dashboardStudentBatch">-</span></p>
+                    <p><strong class="text-slate-500 w-24 inline-block">Email:</strong> <span id="dashboardStudentEmail">-</span></p>
+                    <p><strong class="text-slate-500 w-24 inline-block">Unique ID:</strong> <span id="dashboardStudentId">-</span></p>
+                </div>
+            </div>
+            <!-- Student Announcements Tab -->
+            <div id="studentAnnouncementsTab" class="student-tab-content hidden mt-8 h-96 overflow-y-auto custom-scrollbar"></div>
+            <!-- Student Routine Tab -->
+            <div id="studentRoutineTab" class="student-tab-content hidden mt-8">
+                <div id="studentRoutineContent" class="bg-slate-50 p-6 rounded-lg whitespace-pre-wrap border border-slate-200"></div>
+            </div>
+            <!-- Student Exams Tab -->
+            <div id="studentExamsTab" class="student-tab-content hidden mt-8">
+                 <div id="examListStudent" class="space-y-4"></div>
+            </div>
+        </div>
+        
+        <!-- Exam Taking View -->
+        <div id="examTakingView" class="view hidden bg-white p-8 rounded-xl shadow-xl max-w-3xl mx-auto">
+            <div class="flex justify-between items-center border-b border-slate-200 pb-4 mb-6">
+                <h2 id="examTakingTitle" class="text-2xl font-bold">Exam Title</h2>
+                <div id="examTimer" class="text-xl font-mono font-bold text-red-600">00:00</div>
+            </div>
+            <div id="examQuestionContainer">
+                <!-- Current question will be rendered here -->
+            </div>
+            <div class="flex justify-between mt-8">
+                <button onclick="prevQuestion()" id="prevQuestionBtn" class="px-6 py-2 bg-slate-200 rounded-lg hover:bg-slate-300 transition-colors">Previous</button>
+                <button onclick="nextQuestion()" id="nextQuestionBtn" class="px-6 py-2 bg-sky-600 text-white rounded-lg hover:bg-sky-700 transition-colors">Next</button>
+                <button onclick="finishExam()" id="finishExamBtn" class="hidden px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors">Finish Exam</button>
+            </div>
+        </div>
+        
+        <!-- Exam Results View -->
+        <div id="examResultsView" class="view hidden bg-white p-8 rounded-xl shadow-xl max-w-3xl mx-auto">
+             <h2 class="text-2xl font-bold mb-4">Exam Results</h2>
+             <div id="examResultSummary" class="text-center bg-slate-50 p-6 rounded-lg mb-6 border border-slate-200"></div>
+             <div id="examReviewContainer" class="space-y-4 h-96 overflow-y-auto custom-scrollbar pr-2"></div>
+             <button onclick="showView('studentDashboardView')" class="w-full mt-6 py-3 px-4 rounded-lg text-white bg-sky-600 hover:bg-sky-700 transition-colors">Back to Dashboard</button>
+        </div>
+
+        <!-- All Modals -->
+        <div id="editStudentModal" class="modal hidden fixed inset-0 bg-slate-900 bg-opacity-50 overflow-y-auto h-full w-full flex items-center justify-center">
+            <div class="relative mx-auto p-8 border w-full max-w-lg shadow-lg rounded-md bg-white">
+                <h3 class="text-lg font-medium text-slate-900 mb-4">Edit Student Information</h3>
+                <form id="editStudentForm" class="space-y-4">
+                    <input type="hidden" id="editStudentId">
+                    <div class="grid grid-cols-2 gap-4">
+                        <input type="text" id="editStudentName" placeholder="Student Name" required class="block w-full px-3 py-2 border border-slate-300 rounded-md focus:outline-none focus:ring-2 focus:ring-sky-500">
+                        <input type="email" id="editStudentEmail" placeholder="Student Email" required class="block w-full px-3 py-2 border border-slate-300 rounded-md focus:outline-none focus:ring-2 focus:ring-sky-500">
+                    </div>
+                    <select id="editStudentBatch" required class="block w-full px-3 py-2 border border-slate-300 bg-white rounded-md focus:outline-none focus:ring-2 focus:ring-sky-500"></select>
+                    
+                    <div class="border-t border-slate-200 pt-4 mt-4">
+                        <h4 class="font-medium text-slate-800 mb-2">Payment History</h4>
+                        <div id="paymentHistoryContainer" class="space-y-2 text-sm"></div>
+                        <button type="button" id="addInstallmentBtn" onclick="showNewInstallmentFields()" class="hidden mt-2 text-sm text-sky-600 hover:text-sky-800 font-semibold">+ Add Second Installment</button>
+                    </div>
+
+                    <div id="newInstallmentSection" class="hidden space-y-3 border-t border-slate-200 pt-4 mt-4">
+                         <h4 class="font-medium text-slate-800">New Installment Details</h4>
+                         <select id="newPaymentStatus" class="block w-full px-3 py-2 border border-slate-300 bg-white rounded-md focus:outline-none focus:ring-2 focus:ring-sky-500">
+                            <option value="second-installment">Second Installment</option>
+                            <option value="paid">Paid</option>
+                        </select>
+                        <input type="text" id="newPaymentAmount" placeholder="Amount" class="block w-full px-3 py-2 border border-slate-300 rounded-md focus:outline-none focus:ring-2 focus:ring-sky-500">
+                        <input type="date" id="newPaymentDate" class="block w-full px-3 py-2 border border-slate-300 rounded-md focus:outline-none focus:ring-2 focus:ring-sky-500">
+                    </div>
+
+                    <div class="flex justify-end space-x-2 pt-4">
+                        <button type="button" onclick="closeEditModal()" class="px-4 py-2 bg-slate-200 text-slate-800 rounded-md hover:bg-slate-300 transition-colors">Cancel</button>
+                        <button type="submit" class="px-4 py-2 bg-sky-600 text-white rounded-md hover:bg-sky-700 transition-colors">Save Changes</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+        
+        <div id="editPaymentModal" class="modal hidden fixed inset-0 bg-slate-900 bg-opacity-70 overflow-y-auto h-full w-full flex items-center justify-center">
+            <div class="relative mx-auto p-8 border w-full max-w-md shadow-lg rounded-md bg-white">
+                <h3 class="text-lg font-medium text-slate-900 mb-4">Edit Payment Record</h3>
+                <form id="editPaymentForm" class="space-y-4">
+                    <input type="hidden" id="editPaymentStudentId">
+                    <input type="hidden" id="editPaymentIndex">
+                    <select id="editPaymentStatus" required class="block w-full px-3 py-2 border border-slate-300 bg-white rounded-md focus:outline-none focus:ring-2 focus:ring-sky-500">
+                        <option value="not-paid">Not Paid</option>
+                        <option value="first-installment">First Installment</option>
+                        <option value="second-installment">Second Installment</option>
+                        <option value="one-time">One Time Payment</option>
+                        <option value="paid">Paid</option>
+                    </select>
+                    <input type="text" id="editPaymentAmount" placeholder="Amount" required class="block w-full px-3 py-2 border border-slate-300 rounded-md focus:outline-none focus:ring-2 focus:ring-sky-500">
+                    <input type="date" id="editPaymentDate" required class="block w-full px-3 py-2 border border-slate-300 rounded-md focus:outline-none focus:ring-2 focus:ring-sky-500">
+                    <div class="flex justify-end space-x-2 pt-4">
+                        <button type="button" onclick="closePaymentEditModal()" class="px-4 py-2 bg-slate-200 text-slate-800 rounded-md hover:bg-slate-300 transition-colors">Cancel</button>
+                        <button type="submit" class="px-4 py-2 bg-sky-600 text-white rounded-md hover:bg-sky-700 transition-colors">Update Payment</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+        
+        <div id="editExamModal" class="modal hidden fixed inset-0 bg-slate-900 bg-opacity-50 overflow-y-auto h-full w-full flex items-center justify-center">
+            <div class="relative mx-auto p-8 border w-full max-w-2xl shadow-lg rounded-md bg-white">
+                <h3 class="text-lg font-medium text-slate-900 mb-4">Edit Exam</h3>
+                <form id="editExamForm" class="space-y-4">
+                    <input type="hidden" id="editExamId">
+                    <input type="text" id="editExamTitle" placeholder="Exam Title" required class="block w-full px-3 py-2 border border-slate-300 rounded-md focus:outline-none focus:ring-2 focus:ring-sky-500">
+                    <div class="grid grid-cols-2 gap-4">
+                        <select id="editExamBatch" required class="block w-full px-3 py-2 border border-slate-300 bg-white rounded-md focus:outline-none focus:ring-2 focus:ring-sky-500"><option value="">Assign to Batch</option></select>
+                        <input type="number" id="editExamDuration" placeholder="Duration (minutes)" required class="block w-full px-3 py-2 border border-slate-300 rounded-md focus:outline-none focus:ring-2 focus:ring-sky-500">
+                    </div>
+                    <input type="number" id="editExamPassPercent" placeholder="Pass Percentage %" required min="1" max="100" class="block w-full px-3 py-2 border border-slate-300 rounded-md focus:outline-none focus:ring-2 focus:ring-sky-500">
+                    
+                    <div class="border-t border-slate-200 pt-4">
+                        <h4 class="font-medium text-slate-800 mb-2">Questions</h4>
+                        <div id="editQuestionsContainer" class="space-y-4 max-h-64 overflow-y-auto custom-scrollbar pr-2">
+                            <!-- Existing questions will be rendered here -->
+                        </div>
+                        <button type="button" onclick="addQuestionToEditForm()" class="mt-4 text-sm text-sky-600 hover:text-sky-800 font-semibold">+ Add Question</button>
+                    </div>
+                    
+                    <div class="flex justify-end space-x-2 pt-4">
+                        <button type="button" onclick="closeEditExamModal()" class="px-4 py-2 bg-slate-200 text-slate-800 rounded-md hover:bg-slate-300 transition-colors">Cancel</button>
+                        <button type="submit" class="px-4 py-2 bg-sky-600 text-white rounded-md hover:bg-sky-700 transition-colors">Save Changes</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
     </div>
     
-    <!-- Exam Results Screen -->
-    <div id="exam-results-screen" class="hidden">
-        <div class="max-w-4xl mx-auto p-8">
-            <div class="text-center bg-white p-10 rounded-lg shadow-xl">
-                <i id="results-icon" class="text-6xl mb-4"></i>
-                <h2 id="results-title" class="text-3xl font-bold text-slate-800 mb-2"></h2>
-                <p class="text-slate-600 mb-6">Here is your result.</p>
-                <div class="text-4xl font-bold bg-indigo-100 text-indigo-800 py-4 px-8 rounded-lg">
-                    <span id="final-score">0</span> / <span id="total-score">0</span>
-                </div>
-                 <p id="results-message" class="mt-4 font-semibold"></p>
-            </div>
-            <div id="results-review-container" class="mt-8 bg-white p-8 rounded-lg shadow-lg"></div>
-            <button id="back-to-portal-btn" class="mt-8 w-full py-3 px-4 border border-transparent rounded-md shadow-sm text-lg font-medium text-white bg-indigo-600 hover:bg-indigo-700">Back to Portal</button>
-        </div>
-    </div>
-
-
-    <!-- Modals -->
-    <div id="student-modal" class="modal"><div class="modal-content"><div class="flex justify-between items-center mb-4"><h3 id="student-modal-title" class="text-xl font-semibold">Add Student</h3><button class="close-modal-btn text-2xl text-slate-500 hover:text-slate-800">&times;</button></div><form id="student-form"><input type="hidden" id="student-id-input"><div class="mb-4"><label for="student-name" class="block mb-1">Full Name</label><input type="text" id="student-name" class="w-full p-2 border rounded-md" required></div><div class="mb-4"><label for="student-class" class="block mb-1">Class</label><select id="student-class" class="w-full p-2 border rounded-md" required></select></div><div class="mb-4"><label for="student-guardian" class="block mb-1">Guardian's Name</label><input type="text" id="student-guardian" class="w-full p-2 border rounded-md" required></div><div class="mb-4"><label for="student-contact" class="block mb-1">Guardian's Contact</label><input type="tel" id="student-contact" class="w-full p-2 border rounded-md" required></div><button type="submit" class="w-full bg-indigo-600 text-white px-4 py-2 rounded-md hover:bg-indigo-700">Save Student</button></form></div></div>
-    <div id="teacher-modal" class="modal"><div class="modal-content"><div class="flex justify-between items-center mb-4"><h3 id="teacher-modal-title" class="text-xl font-semibold">Add Teacher</h3><button class="close-modal-btn text-2xl text-slate-500 hover:text-slate-800">&times;</button></div><form id="teacher-form"><input type="hidden" id="teacher-id-input"><div class="mb-4"><label for="teacher-name" class="block mb-1">Full Name</label><input type="text" id="teacher-name" class="w-full p-2 border rounded-md" required></div><div class="mb-4"><label for="teacher-subject" class="block mb-1">Subject</label><select id="teacher-subject" class="w-full p-2 border rounded-md" required></select></div><div class="mb-4"><label for="teacher-contact" class="block mb-1">Contact Number</label><input type="tel" id="teacher-contact" class="w-full p-2 border rounded-md" required></div><button type="submit" class="w-full bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700">Save Teacher</button></form></div></div>
-    <div id="exam-modal" class="modal"><div class="modal-content"><div class="flex justify-between items-center mb-4"><h3 id="exam-modal-title" class="text-xl font-semibold">Create Exam</h3><button class="close-modal-btn text-2xl text-slate-500 hover:text-slate-800">&times;</button></div><form id="exam-form"><input type="hidden" id="exam-id-input"><div class="mb-4"><label for="exam-title" class="block mb-1">Exam Title</label><input type="text" id="exam-title" class="w-full p-2 border rounded-md" required></div><div class="grid grid-cols-1 md:grid-cols-2 gap-4"><div class="mb-4"><label for="exam-class" class="block mb-1">Class</label><select id="exam-class" class="w-full p-2 border rounded-md" required></select></div><div class="mb-4"><label for="exam-subject" class="block mb-1">Subject</label><select id="exam-subject" class="w-full p-2 border rounded-md" required></select></div></div><div class="grid grid-cols-1 md:grid-cols-3 gap-4"><div class="mb-4"><label for="exam-date" class="block mb-1">Date</label><input type="date" id="exam-date" class="w-full p-2 border rounded-md" required></div><div class="mb-4"><label for="exam-duration" class="block mb-1">Duration (Min)</label><input type="number" id="exam-duration" class="w-full p-2 border rounded-md" required></div><div class="mb-4"><label for="exam-passing-mark" class="block mb-1">Passing Mark (%)</label><input type="number" id="exam-passing-mark" class="w-full p-2 border rounded-md" required min="0" max="100"></div></div><button type="submit" class="w-full bg-indigo-600 text-white px-4 py-2 rounded-md hover:bg-indigo-700">Save Exam</button></form></div></div>
-    <div id="questions-modal" class="modal"><div class="modal-content"><div class="flex justify-between items-center mb-4"><h3 id="questions-modal-title" class="text-xl font-semibold">Manage Questions</h3><button class="close-modal-btn text-2xl text-slate-500 hover:text-slate-800">&times;</button></div><div id="question-list-container" class="mb-4 max-h-96 overflow-y-auto"></div><button id="add-question-btn" class="w-full bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700">Add New Question</button></div></div>
-    <div id="question-form-modal" class="modal"><div class="modal-content"><div class="flex justify-between items-center mb-4"><h3 id="question-form-modal-title" class="text-xl font-semibold">Add Question</h3><button class="close-modal-btn text-2xl text-slate-500 hover:text-slate-800">&times;</button></div><form id="question-form"><input type="hidden" id="question-id-input"><div class="mb-2"><label for="question-text-input" class="block mb-1">Question Text</label><textarea id="question-text-input" class="w-full p-2 border rounded-md" required></textarea></div><div class="mb-2"><label for="question-image-input" class="block mb-1">Image URL (Optional)</label><input type="url" id="question-image-input" class="w-full p-2 border rounded-md"></div><div class="mb-2"><label class="block mb-1">Options (Mark correct answer)</label><div class="space-y-2" id="options-input-container"></div></div><button type="submit" class="w-full bg-indigo-600 text-white px-4 py-2 rounded-md hover:bg-indigo-700">Save Question</button></form></div></div>
-    <div id="confirm-modal" class="modal"><div class="modal-content text-center"><h3 class="text-xl font-semibold mb-4" id="confirm-modal-title">Are you sure?</h3><p id="confirm-modal-text" class="text-slate-600 mb-6"></p><div class="flex justify-center gap-4"><button id="confirm-modal-cancel" class="px-6 py-2 rounded-md bg-slate-200 hover:bg-slate-300">Cancel</button><button id="confirm-modal-confirm" class="px-6 py-2 rounded-md bg-red-600 text-white hover:bg-red-700">Confirm</button></div></div></div>
+    <footer class="text-center mt-8 py-4">
+        <p class="text-sm text-slate-500">Developed by Sheikh Istemam Ahmed</p>
+        <p class="text-sm text-slate-500">Email: istemamahmed@outlook.com</p>
+    </footer>
 
     <script type="module">
         // Import Firebase modules
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.7/firebase-app.js";
-        import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/9.6.7/firebase-auth.js";
-        import { getFirestore, collection, getDocs, doc, getDoc, setDoc, addDoc, updateDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/9.6.7/firebase-firestore.js";
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-app.js";
+        import { 
+            getAuth, 
+            createUserWithEmailAndPassword, 
+            signInWithEmailAndPassword, 
+            signOut,
+            onAuthStateChanged
+        } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-auth.js";
+        import { 
+            getFirestore, 
+            collection, 
+            addDoc, 
+            getDocs, 
+            doc, 
+            getDoc,
+            setDoc,
+            updateDoc,
+            deleteDoc,
+            query as firestoreQuery,
+            where,
+            onSnapshot,
+            orderBy
+        } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore.js";
 
-        // PASTE YOUR FIREBASE CONFIGURATION HERE
-       const firebaseConfig = {
-  apiKey: "AIzaSyAeR60EkolLWxmvA3tneg5GbzBVNgkPu1k",
-  authDomain: "student-management-bdd86.firebaseapp.com",
-  projectId: "student-management-bdd86",
-  storageBucket: "student-management-bdd86.firebasestorage.app",
-  messagingSenderId: "982237538403",
-  appId: "1:982237538403:web:cb0dadfb2eaaac80a3f056"
+        // IMPORTANT: REPLACE WITH YOUR FIREBASE CONFIGURATION
+      const firebaseConfig = {
+  apiKey: "AIzaSyDsu5eppaC_Gxbr_byqxd4W9UcIykB-Xb8",
+  authDomain: "student-management-f081d.firebaseapp.com",
+  projectId: "student-management-f081d",
+  storageBucket: "student-management-f081d.firebasestorage.app",
+  messagingSenderId: "268768838288",
+  appId: "1:268768838288:web:fc46184ba5ab9456148e15"
 };
 
         // Initialize Firebase
+        if (firebaseConfig.apiKey === "YOUR_API_KEY") {
+            document.body.innerHTML = `
+                <div class="w-full h-screen flex items-center justify-center">
+                    <div class="bg-white p-8 rounded-xl shadow-xl text-center max-w-lg mx-auto">
+                        <h1 class="text-2xl font-bold text-red-600 mb-4">Firebase Not Configured</h1>
+                        <p class="text-slate-600">Please replace the placeholder <strong>firebaseConfig</strong> values in the HTML file with your project's actual Firebase configuration keys to run the application.</p>
+                    </div>
+                </div>
+            `;
+            throw new Error("Firebase is not configured. Please update firebaseConfig in the script.");
+        }
+        
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
         const db = getFirestore(app);
 
-        // State Variables
-        let currentUser = null; 
-        let currentExamForQuestions = null;
-        let currentExamState = { exam: null, currentQuestionIndex: 0, studentAnswers: {}, timerIntervalId: null };
-        let isAdminPanelInitialized = false;
+        // --- GLOBAL STATE ---
+        let currentStudent = null; // Track logged-in student
+        let examTimerInterval;
+        let studentAnswers = {};
+        let allStudents = [];
+        let allBatches = [];
+        
+        // Unsubscribe functions for Firestore listeners
+        let unsubscribeStudents, unsubscribeBatches, unsubscribeAnnouncements, unsubscribeRoutines, unsubscribeExams;
 
-        // UI Element Selectors
-        const loginScreen = document.getElementById('login-screen');
-        const adminPanel = document.getElementById('admin-panel');
-        const studentPortal = document.getElementById('student-portal');
-        const examTakingScreen = document.getElementById('exam-taking-screen');
-        const examResultsScreen = document.getElementById('exam-results-screen');
-        const loginForm = document.getElementById('login-form');
+        // --- DATABASE FUNCTIONS (NOW WITH FIREBASE!) ---
+        async function registerAdmin(email, password) { return createUserWithEmailAndPassword(auth, email, password); }
+        async function loginAdmin(email, password) { return signInWithEmailAndPassword(auth, email, password); }
+        async function createBatch(batchName) { return addDoc(collection(db, "batches"), { name: batchName }); }
+        async function getBatchById(batchId) { return allBatches.find(b => b.id === batchId) || null; }
+        function generateUniqueId(name) { const nameParts = name.trim().split(' '); let initials = nameParts[0].charAt(0); if (nameParts.length > 1) initials += nameParts[nameParts.length - 1].charAt(0); else if (name.length > 1) initials += name.charAt(1); return `${initials.toUpperCase()}-${Math.floor(1000 + Math.random() * 9000)}`; }
+        async function addStudent(studentData) { const studentId = generateUniqueId(studentData.name); const studentRef = doc(db, "students", studentId); await setDoc(studentRef, { name: studentData.name, email: studentData.email, batchId: studentData.batchId, paymentInfo: [{ status: studentData.paymentStatus, amount: studentData.paymentAmount, date: studentData.paymentDate }], passedExams: [] }); return { id: studentId, ...studentData }; }
+        async function findStudentById(id) { const docRef = doc(db, "students", id); const docSnap = await getDoc(docRef); return docSnap.exists() ? { id: docSnap.id, ...docSnap.data() } : null; }
+        async function updateStudent(id, newData) { const studentRef = doc(db, "students", id); if (newData.newPayment) { const student = await findStudentById(id); const updatedPayments = [...student.paymentInfo, newData.newPayment]; await updateDoc(studentRef, { name: newData.name, email: newData.email, batchId: newData.batchId, paymentInfo: updatedPayments }); } else { await updateDoc(studentRef, { name: newData.name, email: newData.email, batchId: newData.batchId }); } }
+        async function updateStudentPayment(studentId, paymentIndex, paymentData) { const student = await findStudentById(studentId); if (student) { student.paymentInfo[paymentIndex] = paymentData; await updateDoc(doc(db, "students", studentId), { paymentInfo: student.paymentInfo }); } }
+        async function deleteStudent(id) { await deleteDoc(doc(db, "students", id)); }
+        async function addAnnouncement(title, content, batchId) { return addDoc(collection(db, "announcements"), { title, content, batchId, timestamp: new Date().toISOString() }); }
+        async function deleteAnnouncement(id) { await deleteDoc(doc(db, "announcements", id)); }
+        async function setRoutine(batchId, content) { const routineRef = doc(db, "routines", batchId); await setDoc(routineRef, { content }); }
+        async function getRoutineForBatch(batchId) { const docRef = doc(db, "routines", batchId); const docSnap = await getDoc(docRef); return docSnap.exists() ? docSnap.data() : null; }
+        async function addExam(examData) { return addDoc(collection(db, "exams"), examData); }
+        async function getExamById(id) { const docRef = doc(db, "exams", id); const docSnap = await getDoc(docRef); return docSnap.exists() ? { id: docSnap.id, ...docSnap.data() } : null; }
+        async function getExamsForBatch(batchId) { const q = firestoreQuery(collection(db, "exams"), where("batchId", "==", batchId)); const querySnapshot = await getDocs(q); return querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })); }
+        async function deleteExam(id) { await deleteDoc(doc(db, "exams", id)); }
+        async function updateExam(id, newData) { const examRef = doc(db, "exams", id); await updateDoc(examRef, newData); }
 
-        // Authentication Logic
-        loginForm.addEventListener('submit', (e) => {
-            e.preventDefault();
-            const email = document.getElementById('email-login').value;
-            const password = document.getElementById('password-input').value;
-            const loginError = document.getElementById('login-error');
-            loginError.textContent = '';
+        // --- UI & VIEW MANAGEMENT ---
+        window.showView = function(viewId) {
+            document.querySelectorAll('.view').forEach(view => view.classList.toggle('hidden', view.id !== viewId));
+            if (viewId === 'adminDashboardView') {
+                attachRealtimeListeners();
+            } else {
+                detachRealtimeListeners();
+            }
+        }
 
-            signInWithEmailAndPassword(auth, email, password)
-                .catch(error => {
-                    loginError.textContent = error.message;
-                });
+        window.switchTab = function(tabId, button) {
+            document.querySelectorAll('.tab-content').forEach(tc => tc.classList.add('hidden'));
+            document.getElementById(tabId).classList.remove('hidden');
+            document.querySelectorAll('.admin-tab').forEach(b => { b.classList.remove('tab-active'); b.classList.add('text-slate-500'); });
+            button.classList.add('tab-active');
+            button.classList.remove('text-slate-500');
+        }
+        
+        window.switchStudentTab = function(tabId, button) {
+            document.querySelectorAll('.student-tab-content').forEach(tc => tc.classList.add('hidden'));
+            document.getElementById(tabId).classList.remove('hidden');
+            document.querySelectorAll('.student-tab').forEach(b => { b.classList.remove('tab-active'); b.classList.add('text-slate-500'); });
+            button.classList.add('tab-active');
+            button.classList.remove('text-slate-500');
+        }
+        
+        // --- REALTIME LISTENERS ---
+        function attachRealtimeListeners() {
+            unsubscribeStudents = onSnapshot(collection(db, "students"), (snapshot) => {
+                allStudents = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                handleSearch(); // Re-run search with the new full list
+            });
+            unsubscribeBatches = onSnapshot(collection(db, "batches"), (snapshot) => {
+                allBatches = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                renderBatchList();
+                renderBatchesInDropdown(allBatches);
+                renderBatchesForExport(allBatches);
+                renderBatchesForRoutineSelect(allBatches);
+                renderBatchesForExamSelect(allBatches);
+            });
+            unsubscribeAnnouncements = onSnapshot(firestoreQuery(collection(db, "announcements"), orderBy("timestamp", "desc")), (snapshot) => {
+                const announcements = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                renderAnnouncementsAdmin(announcements);
+            });
+            unsubscribeExams = onSnapshot(collection(db, "exams"), (snapshot) => {
+                const exams = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                renderExamsAdmin(exams);
+            });
+        }
+        
+        function detachRealtimeListeners() {
+            if (unsubscribeStudents) unsubscribeStudents();
+            if (unsubscribeBatches) unsubscribeBatches();
+            if (unsubscribeAnnouncements) unsubscribeAnnouncements();
+            if (unsubscribeExams) unsubscribeExams();
+        }
+
+        // --- RENDER FUNCTIONS (now take data as argument) ---
+        function renderBatchesInDropdown(batches) { const selects = [document.getElementById('studentBatch'), document.getElementById('editStudentBatch'), document.getElementById('announcementBatchSelect')]; selects.forEach(select => { const currentVal = select.value; let firstOption = '<option value="">Assign to Batch</option>'; if(select.id === 'announcementBatchSelect') firstOption = '<option value="all">All Batches</option>'; select.innerHTML = firstOption; batches.forEach(batch => { const option = document.createElement('option'); option.value = batch.id; option.textContent = batch.name; select.appendChild(option); }); select.value = currentVal; }); }
+        function renderBatchesForExport(batches) { const select = document.getElementById('exportBatchSelect'); select.innerHTML = '<option value="">Select a Batch</option>'; batches.forEach(batch => { const option = document.createElement('option'); option.value = batch.id; option.textContent = batch.name; select.appendChild(option); }); }
+        function renderBatchList() { const container = document.getElementById('batchList'); container.innerHTML = ''; if (allBatches.length === 0) { container.innerHTML = `<p class="text-slate-500 text-center mt-4">No batches created yet.</p>`; return; } allBatches.forEach(batch => { const studentsInBatch = allStudents.filter(s => s.batchId === batch.id); let studentHTML = '<p class="text-sm text-slate-500 pl-4 py-2">No students in this batch.</p>'; if (studentsInBatch.length > 0) { studentHTML = studentsInBatch.map(s => `<div class="text-sm pl-4 py-2 border-t">${s.name}</div>`).join(''); } const accordionItem = ` <div class="bg-white mb-2 rounded-md shadow-sm border border-slate-200"> <button onclick="toggleAccordion(this)" class="w-full text-left p-3 font-semibold flex justify-between items-center"> <span>${batch.name}</span> <i class="fas fa-chevron-down transition-transform"></i> </button> <div class="accordion-content bg-slate-50 p-2"> <input type="text" oninput="handleInBatchSearch(this, '${batch.id}')" placeholder="Search in batch..." class="w-full p-2 mb-2 border border-slate-300 rounded-md"> <div id="student-list-${batch.id}">${studentHTML}</div> </div> </div>`; container.innerHTML += accordionItem; }); }
+        window.toggleAccordion = function(button) { const content = button.nextElementSibling; const icon = button.querySelector('i'); if (content.style.maxHeight) { content.style.maxHeight = null; icon.classList.remove('rotate-180'); } else { content.style.maxHeight = content.scrollHeight + "px"; icon.classList.add('rotate-180'); } }
+        function getPaymentStatusPill(status) { const statuses = { 'not-paid': 'bg-red-100 text-red-800', 'one-time': 'bg-green-100 text-green-800', 'first-installment': 'bg-yellow-100 text-yellow-800', 'second-installment': 'bg-blue-100 text-blue-800', 'paid': 'bg-green-100 text-green-800', }; const text = status.replace('-', ' ').replace(/\b\w/g, l => l.toUpperCase()); return `<span class="px-2 py-1 text-xs font-medium rounded-full ${statuses[status] || 'bg-slate-100 text-slate-800'}">${text}</span>`; }
+        async function renderStudentList(studentList) { const container = document.getElementById('studentList'); container.innerHTML = ''; if (studentList.length === 0) { container.innerHTML = `<p class="text-slate-500 text-center mt-4">No students found.</p>`; return; } for (const student of studentList) { const batch = await getBatchById(student.batchId); const latestPayment = student.paymentInfo[student.paymentInfo.length - 1]; const studentCard = ` <div class="bg-white p-3 mb-2 rounded-md shadow-sm border border-slate-200"> <div class="flex justify-between items-start"> <div> <p class="font-semibold text-slate-800">${student.name} <span class="text-sm font-normal text-slate-500">(${student.id})</span></p> <p class="text-sm text-slate-600">${student.email}</p> <p class="text-sm text-sky-600 font-medium mt-1">Batch: ${batch ? batch.name : 'N/A'}</p> </div> <div class="flex space-x-2"> <button onclick="openEditModal('${student.id}')" class="text-slate-500 hover:text-sky-600"><i class="fas fa-pencil-alt"></i></button> <button onclick="handleDeleteStudent('${student.id}')" class="text-slate-500 hover:text-red-600"><i class="fas fa-trash-alt"></i></button> </div> </div> <div class="mt-2 text-right flex justify-end items-center space-x-2"> <span class="text-sm text-slate-600">${latestPayment.amount} on ${latestPayment.date}</span> ${getPaymentStatusPill(latestPayment.status)} </div> </div>`; container.innerHTML += studentCard; } }
+        function renderBatchesForRoutineSelect(batches) { const select = document.getElementById('routineBatchSelect'); select.innerHTML = '<option value="">Select a Batch</option>'; batches.forEach(batch => { const option = document.createElement('option'); option.value = batch.id; option.textContent = batch.name; select.appendChild(option); }); }
+        async function renderAnnouncementsAdmin(announcements) { const container = document.getElementById('announcementListAdmin'); container.innerHTML = ''; if (announcements.length === 0) { container.innerHTML = `<p class="text-slate-500 text-center mt-4">No announcements posted.</p>`; return; } for (const a of announcements) { const batch = a.batchId === 'all' ? { name: 'All Batches' } : await getBatchById(a.batchId); container.innerHTML += ` <div class="bg-white p-3 rounded-md shadow-sm border border-slate-200"> <div class="flex justify-between items-start"> <p class="font-semibold">${a.title}</p> <button onclick="handleDeleteAnnouncement('${a.id}')" class="text-slate-400 hover:text-red-500 text-sm"><i class="fas fa-trash"></i></button> </div> <p class="text-xs text-sky-600 font-semibold">${batch ? batch.name : 'Unknown Batch'}</p> <p class="text-sm text-slate-600 mt-1">${a.content}</p> <p class="text-xs text-slate-400 mt-2">${new Date(a.timestamp).toLocaleString()}</p> </div>`; } }
+        async function renderAnnouncementsStudent(batchId) { const container = document.getElementById('studentAnnouncementsTab'); container.innerHTML = ''; const q = firestoreQuery(collection(db, "announcements"), where("batchId", "in", ["all", batchId]), orderBy("timestamp", "desc")); const querySnapshot = await getDocs(q); const announcements = querySnapshot.docs.map(doc => doc.data()); if (announcements.length === 0) { container.innerHTML = `<p class="text-slate-500 text-center mt-8">No announcements at this time.</p>`; return; } announcements.forEach(a => { container.innerHTML += ` <div class="bg-white p-4 mb-3 rounded-lg shadow-sm border border-slate-200"> <p class="font-bold text-lg text-sky-700">${a.title}</p> <p class="text-slate-700 mt-2">${a.content}</p> <p class="text-sm text-slate-500 mt-3">${new Date(a.timestamp).toLocaleString()}</p> </div>`; }); }
+        async function renderRoutineStudent(batchId) { const container = document.getElementById('studentRoutineContent'); const routine = await getRoutineForBatch(batchId); if (routine) { container.textContent = routine.content; } else { container.textContent = 'No class routine has been set for your batch yet.'; } }
+        function renderBatchesForExamSelect(batches) { const selects = [document.getElementById('examBatch'), document.getElementById('editExamBatch')]; selects.forEach(select => { select.innerHTML = '<option value="">Assign to Batch</option>'; batches.forEach(batch => { const option = document.createElement('option'); option.value = batch.id; option.textContent = batch.name; select.appendChild(option); }); }); }
+        async function renderExamsAdmin(exams) { const container = document.getElementById('examListAdmin'); container.innerHTML = ''; if (exams.length === 0) { container.innerHTML = `<p class="text-slate-500 text-center mt-4">No exams created yet.</p>`; return; } for (const exam of exams) { const batch = await getBatchById(exam.batchId); container.innerHTML += ` <div class="bg-white p-3 rounded-md shadow-sm border border-slate-200"> <div class="flex justify-between items-start"> <div> <p class="font-semibold">${exam.title}</p> <p class="text-sm text-slate-600 mt-1">Batch: ${batch ? batch.name : 'N/A'} | ${exam.questions.length} Questions</p> </div> <div class="flex space-x-3"> <button onclick="openEditExamModal('${exam.id}')" class="text-slate-400 hover:text-sky-600 text-sm"><i class="fas fa-pencil-alt"></i></button> <button onclick="handleDeleteExam('${exam.id}')" class="text-slate-400 hover:text-red-500 text-sm"><i class="fas fa-trash"></i></button> </div> </div> </div>`; } }
+        async function renderExamsStudent(studentId) { const student = await findStudentById(studentId); const container = document.getElementById('examListStudent'); const examsForBatch = await getExamsForBatch(student.batchId); const sortedExams = examsForBatch.sort((a, b) => parseInt(a.id.split('-')[1]) - parseInt(b.id.split('-')[1])); container.innerHTML = ''; if (sortedExams.length === 0) { container.innerHTML = `<p class="text-slate-500 text-center mt-8">No exams available for your batch.</p>`; return; } let lockNextExam = false; for (let i = 0; i < sortedExams.length; i++) { const exam = sortedExams[i]; const isLocked = lockNextExam; let buttonHTML; if (isLocked) { buttonHTML = `<button disabled class="px-4 py-2 bg-slate-400 text-white rounded-lg cursor-not-allowed flex items-center"><i class="fas fa-lock mr-2"></i>Locked</button>`; } else { buttonHTML = `<button onclick="startExam('${exam.id}')" class="px-4 py-2 bg-sky-600 text-white rounded-lg hover:bg-sky-700 transition-colors">Start Exam</button>`; } container.innerHTML += ` <div class="bg-white p-4 rounded-lg shadow-sm border border-slate-200 flex justify-between items-center ${isLocked ? 'opacity-60' : ''}"> <div> <p class="font-bold text-lg ${isLocked ? 'text-slate-500' : ''}">${exam.title}</p> <p class="text-sm text-slate-600">${exam.questions.length} questions | ${exam.duration} minutes</p> </div> ${buttonHTML} </div>`; const hasPassedThisExam = student.passedExams && student.passedExams.includes(exam.id); if (!hasPassedThisExam) { lockNextExam = true; } } }
+
+        // --- MODAL FUNCTIONS ---
+        window.openEditModal = async function(studentId) { const student = await findStudentById(studentId); if (!student) return; document.getElementById('newInstallmentSection').classList.add('hidden'); document.getElementById('addInstallmentBtn').classList.add('hidden'); document.getElementById('newPaymentAmount').value = ''; document.getElementById('newPaymentDate').value = ''; document.getElementById('editStudentId').value = student.id; document.getElementById('editStudentName').value = student.name; document.getElementById('editStudentEmail').value = student.email; renderBatchesInDropdown(allBatches); document.getElementById('editStudentBatch').value = student.batchId; const historyContainer = document.getElementById('paymentHistoryContainer'); historyContainer.innerHTML = ''; student.paymentInfo.forEach((p, index) => { historyContainer.innerHTML += ` <div class="flex justify-between items-center bg-slate-50 p-2 rounded-md"> <div class="flex-1">${getPaymentStatusPill(p.status)}</div> <div class="flex-1 font-medium text-center">${p.amount}</div> <div class="flex-1 text-slate-500 text-center">${p.date}</div> <button type="button" onclick="openPaymentEditModal('${student.id}', ${index})" class="text-slate-500 hover:text-sky-600 ml-4"><i class="fas fa-pencil-alt"></i></button> </div>`; }); if (student.paymentInfo.length < 2 && student.paymentInfo[0].status !== 'paid' && student.paymentInfo[0].status !== 'one-time') { document.getElementById('addInstallmentBtn').classList.remove('hidden'); } document.getElementById('editStudentModal').classList.remove('hidden'); }
+        window.showNewInstallmentFields = function() { document.getElementById('newInstallmentSection').classList.remove('hidden'); document.getElementById('newPaymentDate').valueAsDate = new Date(); document.getElementById('addInstallmentBtn').classList.add('hidden'); }
+        window.closeEditModal = function() { document.getElementById('editStudentModal').classList.add('hidden'); }
+        window.openPaymentEditModal = async function(studentId, paymentIndex) { const student = await findStudentById(studentId); const payment = student.paymentInfo[paymentIndex]; if (!payment) return; document.getElementById('editPaymentStudentId').value = studentId; document.getElementById('editPaymentIndex').value = paymentIndex; document.getElementById('editPaymentStatus').value = payment.status; document.getElementById('editPaymentAmount').value = payment.amount; document.getElementById('editPaymentDate').value = payment.date; document.getElementById('editPaymentModal').classList.remove('hidden'); }
+        window.closePaymentEditModal = function() { document.getElementById('editPaymentModal').classList.add('hidden'); }
+        let editQuestionCounter = 0;
+        window.openEditExamModal = async function(examId) { const exam = await getExamById(examId); if (!exam) return; document.getElementById('editExamId').value = exam.id; document.getElementById('editExamTitle').value = exam.title; renderBatchesForExamSelect(allBatches); document.getElementById('editExamBatch').value = exam.batchId; document.getElementById('editExamDuration').value = exam.duration; document.getElementById('editExamPassPercent').value = exam.passPercent; const questionsContainer = document.getElementById('editQuestionsContainer'); questionsContainer.innerHTML = ''; editQuestionCounter = 0; exam.questions.forEach(q => { editQuestionCounter++; const questionHTML = ` <div id="edit-q-${editQuestionCounter}" class="p-3 border border-slate-200 rounded bg-white space-y-2"> <div class="flex justify-between items-center"> <label class="font-medium text-sm">Question ${editQuestionCounter}</label> <button type="button" onclick="removeQuestion('edit-q-${editQuestionCounter}')" class="text-red-500 text-xs"><i class="fas fa-times-circle"></i> Remove</button> </div> <textarea name="q-text" placeholder="Question Text" required class="w-full p-2 border border-slate-300 rounded">${q.text}</textarea> <input type="text" name="q-img" placeholder="Image URL (Optional)" value="${q.imageUrl || ''}" class="w-full p-2 border border-slate-300 rounded"> ${q.options.map((opt, i) => ` <div class="flex items-center space-x-2"> <input type="radio" name="edit-q-correct-${editQuestionCounter}" value="${i}" required ${q.correctAnswer === i ? 'checked' : ''}> <input type="text" name="q-option" placeholder="Option ${i+1}" value="${opt}" required class="w-full p-2 border border-slate-300 rounded"> </div>`).join('')} <textarea name="q-explanation" placeholder="Explanation" required class="w-full p-2 border border-slate-300 rounded">${q.explanation}</textarea> </div>`; questionsContainer.insertAdjacentHTML('beforeend', questionHTML); }); document.getElementById('editExamModal').classList.remove('hidden'); }
+        window.addQuestionToEditForm = function() { editQuestionCounter++; const questionsContainer = document.getElementById('editQuestionsContainer'); const questionHTML = ` <div id="edit-q-${editQuestionCounter}" class="p-3 border border-slate-200 rounded bg-white space-y-2"> <div class="flex justify-between items-center"> <label class="font-medium text-sm">Question ${editQuestionCounter}</label> <button type="button" onclick="removeQuestion('edit-q-${editQuestionCounter}')" class="text-red-500 text-xs"><i class="fas fa-times-circle"></i> Remove</button> </div> <textarea name="q-text" placeholder="Question Text" required class="w-full p-2 border border-slate-300 rounded"></textarea> <input type="text" name="q-img" placeholder="Image URL (Optional)" class="w-full p-2 border border-slate-300 rounded"> ${[...Array(5).keys()].map(i => ` <div class="flex items-center space-x-2"> <input type="radio" name="edit-q-correct-${editQuestionCounter}" value="${i}" required> <input type="text" name="q-option" placeholder="Option ${i+1}" required class="w-full p-2 border border-slate-300 rounded"> </div>`).join('')} <textarea name="q-explanation" placeholder="Explanation" required class="w-full p-2 border border-slate-300 rounded"></textarea> </div>`; questionsContainer.insertAdjacentHTML('beforeend', questionHTML); }
+        window.closeEditExamModal = function() { document.getElementById('editExamModal').classList.add('hidden'); }
+
+        // --- EXAM FORM DYNAMIC QUESTIONS ---
+        let questionCounter = 0;
+        window.addQuestion = function() { questionCounter++; const questionsContainer = document.getElementById('questionsContainer'); const questionHTML = ` <div id="q-${questionCounter}" class="p-3 border border-slate-200 rounded bg-white space-y-2"> <div class="flex justify-between items-center"> <label class="font-medium text-sm">Question ${questionCounter}</label> <button type="button" onclick="removeQuestion('q-${questionCounter}')" class="text-red-500 text-xs"><i class="fas fa-times-circle"></i> Remove</button> </div> <textarea name="q-text" placeholder="Question Text" required class="w-full p-2 border border-slate-300 rounded"></textarea> <input type="text" name="q-img" placeholder="Image URL (Optional)" class="w-full p-2 border border-slate-300 rounded"> ${[...Array(5).keys()].map(i => ` <div class="flex items-center space-x-2"> <input type="radio" name="q-correct-${questionCounter}" value="${i}" required> <input type="text" name="q-option" placeholder="Option ${i+1}" required class="w-full p-2 border border-slate-300 rounded"> </div>`).join('')} <textarea name="q-explanation" placeholder="Explanation for correct answer" required class="w-full p-2 border border-slate-300 rounded"></textarea> </div>`; questionsContainer.insertAdjacentHTML('beforeend', questionHTML); }
+        window.removeQuestion = function(id) { document.getElementById(id).remove(); }
+
+        // --- EXAM LOGIC ---
+        let currentExam = null; let currentQuestionIndex = 0;
+        window.startExam = async function(examId) { currentExam = await getExamById(examId); currentQuestionIndex = 0; studentAnswers[examId] = {}; showView('examTakingView'); document.getElementById('examTakingTitle').textContent = currentExam.title; renderCurrentQuestion(); startTimer(currentExam.duration); }
+        function renderCurrentQuestion() { const question = currentExam.questions[currentQuestionIndex]; const container = document.getElementById('examQuestionContainer'); const savedAnswer = studentAnswers[currentExam.id][question.id]; container.innerHTML = ` <p class="font-semibold text-lg mb-4">${currentQuestionIndex + 1}. ${question.text}</p> ${question.imageUrl ? `<img src="${question.imageUrl}" class="max-w-sm mx-auto mb-4 rounded-lg">` : ''} <div class="space-y-3"> ${question.options.map((opt, i) => ` <label class="flex items-center p-3 border border-slate-200 rounded-lg cursor-pointer hover:bg-slate-100 transition-colors ${savedAnswer === i ? 'selected-answer' : ''}"> <input type="radio" name="exam-option" value="${i}" onchange="selectAnswer(${i})" ${savedAnswer === i ? 'checked' : ''}> <span class="ml-3">${opt}</span> </label>`).join('')} </div>`; document.getElementById('prevQuestionBtn').classList.toggle('hidden', currentQuestionIndex === 0); document.getElementById('nextQuestionBtn').classList.toggle('hidden', currentQuestionIndex === currentExam.questions.length - 1); document.getElementById('finishExamBtn').classList.toggle('hidden', currentQuestionIndex !== currentExam.questions.length - 1); }
+        window.selectAnswer = function(optionIndex) { const questionId = currentExam.questions[currentQuestionIndex].id; studentAnswers[currentExam.id][questionId] = optionIndex; renderCurrentQuestion(); }
+        window.nextQuestion = function() { if(currentQuestionIndex < currentExam.questions.length - 1) { currentQuestionIndex++; renderCurrentQuestion(); } }
+        window.prevQuestion = function() { if(currentQuestionIndex > 0) { currentQuestionIndex--; renderCurrentQuestion(); } }
+        function startTimer(minutes) { let seconds = minutes * 60; const timerEl = document.getElementById('examTimer'); clearInterval(examTimerInterval); examTimerInterval = setInterval(() => { const min = Math.floor(seconds / 60); const sec = seconds % 60; timerEl.textContent = `${String(min).padStart(2, '0')}:${String(sec).padStart(2, '0')}`; seconds--; if (seconds < 0) { clearInterval(examTimerInterval); finishExam(); } }, 1000); }
+        async function finishExam() { clearInterval(examTimerInterval); let score = 0; currentExam.questions.forEach(q => { if (studentAnswers[currentExam.id][q.id] === q.correctAnswer) { score++; } }); const percentage = (score / currentExam.questions.length) * 100; const passed = percentage >= currentExam.passPercent; if (passed && currentStudent) { if (!currentStudent.passedExams) { currentStudent.passedExams = []; } if (!currentStudent.passedExams.includes(currentExam.id)) { currentStudent.passedExams.push(currentExam.id); await updateDoc(doc(db, "students", currentStudent.id), { passedExams: currentStudent.passedExams }); } } const summaryEl = document.getElementById('examResultSummary'); summaryEl.innerHTML = ` <p class="text-4xl font-bold ${passed ? 'text-green-600' : 'text-red-600'}">${passed ? 'Passed!' : 'Failed'}</p> <p class="text-lg mt-2">Your Score: ${score} out of ${currentExam.questions.length} (${percentage.toFixed(2)}%)</p> <p class="text-sm text-slate-600">Passing score was ${currentExam.passPercent}%</p>`; renderExamReview(); showView('examResultsView'); renderExamsStudent(currentStudent.id); }
+        window.finishExam = finishExam;
+        function renderExamReview() { const container = document.getElementById('examReviewContainer'); container.innerHTML = ''; currentExam.questions.forEach((q, index) => { const studentAnswerIndex = studentAnswers[currentExam.id][q.id]; let answerHTML = q.options.map((opt, i) => { let classes = 'p-3 border border-slate-200 rounded-lg'; if (i === q.correctAnswer) classes += ' correct-answer'; else if (i === studentAnswerIndex) classes += ' incorrect-answer'; return `<div class="${classes}">${opt}</div>`; }).join(''); container.innerHTML += ` <div class="bg-white p-4 rounded-lg shadow-sm border border-slate-200"> <p class="font-semibold">${index + 1}. ${q.text}</p> ${q.imageUrl ? `<img src="${q.imageUrl}" class="max-w-xs my-2 rounded">` : ''} <div class="space-y-2 mt-3">${answerHTML}</div> <div class="mt-3 p-3 bg-sky-50 rounded-lg"> <p class="font-semibold text-sm text-sky-800">Explanation:</p> <p class="text-sm text-sky-700">${q.explanation}</p> </div> </div>`; }); }
+        
+        // --- EVENT HANDLERS ---
+        document.addEventListener('DOMContentLoaded', () => {
+            document.getElementById('paymentDate').valueAsDate = new Date();
+            showView('mainView');
+
+            // Attach all event listeners here to ensure DOM is loaded
+            document.getElementById('exportBtn').addEventListener('click', async function() { const batchId = document.getElementById('exportBatchSelect').value; const feedback = document.getElementById('exportFeedback'); if (!batchId) { feedback.innerHTML = `<p class="text-red-500">Please select a batch to export.</p>`; return; } feedback.innerHTML = ''; const batch = await getBatchById(batchId); const q = firestoreQuery(collection(db, "students"), where("batchId", "==", batchId)); const querySnapshot = await getDocs(q); const studentsToExport = querySnapshot.docs.map(doc => doc.data()); if (studentsToExport.length === 0) { feedback.innerHTML = `<p class="text-yellow-500">This batch has no students to export.</p>`; return; } const dataForSheet = studentsToExport.map(student => { const firstInstallment = student.paymentInfo[0]; const secondInstallment = student.paymentInfo[1]; return { 'Name': student.name, 'Email': student.email, 'First Installment Date': firstInstallment ? firstInstallment.date : 'N/A', 'First Installment Amount': firstInstallment ? firstInstallment.amount : 'N/A', 'Second Installment Date': secondInstallment ? secondInstallment.date : 'N/A', 'Second Installment Amount': secondInstallment ? secondInstallment.amount : 'N/A', }; }); const worksheet = XLSX.utils.json_to_sheet(dataForSheet); const workbook = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(workbook, worksheet, 'Students'); XLSX.writeFile(workbook, `${batch.name.replace(/ /g,"_")}_Students.xlsx`); });
+            document.getElementById('adminLoginForm').addEventListener('submit', async function(e) { e.preventDefault(); const email = document.getElementById('adminLoginEmail').value; const password = document.getElementById('adminLoginPassword').value; const feedback = document.getElementById('adminLoginFeedback'); try { await loginAdmin(email, password); } catch(error) { feedback.textContent = error.message; } });
+            document.getElementById('batchForm').addEventListener('submit', async function(e) { e.preventDefault(); const batchName = document.getElementById('batchName').value; const feedback = document.getElementById('batchFeedback'); try { await createBatch(batchName); feedback.innerHTML = `<p class="text-green-600">Batch created.</p>`; this.reset(); } catch (error) { feedback.innerHTML = `<p class="text-red-600">${error.message}</p>`; } });
+            document.getElementById('adminForm').addEventListener('submit', async function(e) { e.preventDefault(); const studentData = { name: document.getElementById('studentName').value, email: document.getElementById('studentEmail').value, batchId: document.getElementById('studentBatch').value, paymentStatus: document.getElementById('paymentStatus').value, paymentAmount: document.getElementById('paymentAmount').value, paymentDate: document.getElementById('paymentDate').value }; const feedback = document.getElementById('adminFeedback'); if (!studentData.name || !studentData.email || !studentData.batchId || !studentData.paymentStatus || !studentData.paymentAmount || !studentData.paymentDate) { feedback.innerHTML = `<p class="text-red-500">Please fill out all fields.</p>`; return; } const created = await addStudent(studentData); feedback.innerHTML = `<p class="text-green-600">Student created with ID: <strong>${created.id}</strong></p>`; this.reset(); document.getElementById('paymentDate').valueAsDate = new Date(); });
+            document.getElementById('editStudentForm').addEventListener('submit', async function(e) { e.preventDefault(); const studentId = document.getElementById('editStudentId').value; const updatedData = { name: document.getElementById('editStudentName').value, email: document.getElementById('editStudentEmail').value, batchId: document.getElementById('editStudentBatch').value }; const newPaymentAmount = document.getElementById('newPaymentAmount').value; if (newPaymentAmount) { updatedData.newPayment = { status: document.getElementById('newPaymentStatus').value, amount: newPaymentAmount, date: document.getElementById('newPaymentDate').value }; } await updateStudent(studentId, updatedData); closeEditModal(); });
+            document.getElementById('editPaymentForm').addEventListener('submit', async function(e) { e.preventDefault(); const studentId = document.getElementById('editPaymentStudentId').value; const paymentIndex = document.getElementById('editPaymentIndex').value; const paymentData = { status: document.getElementById('editPaymentStatus').value, amount: document.getElementById('editPaymentAmount').value, date: document.getElementById('editPaymentDate').value }; await updateStudentPayment(studentId, paymentIndex, paymentData); closePaymentEditModal(); openEditModal(studentId); });
+            document.getElementById('studentLoginForm').addEventListener('submit', async function(e){ e.preventDefault(); const student = await findStudentById(document.getElementById('studentId').value); if(student){ currentStudent = student; const batch = await getBatchById(student.batchId); document.getElementById('studentNameHeader').textContent = student.name.split(' ')[0]; document.getElementById('dashboardStudentName').textContent = student.name; document.getElementById('dashboardStudentEmail').textContent = student.email; document.getElementById('dashboardStudentId').textContent = student.id; document.getElementById('dashboardStudentBatch').textContent = batch ? batch.name : 'N/A'; renderAnnouncementsStudent(student.batchId); renderRoutineStudent(student.batchId); renderExamsStudent(student.id); showView('studentDashboardView'); switchStudentTab('studentProfileTab', document.querySelector('.student-tab')); } else { document.getElementById('studentLoginError').textContent = 'Invalid ID.'; } });
+            document.getElementById('searchInput').addEventListener('input', handleSearch);
+            document.getElementById('searchType').addEventListener('change', handleSearch);
+            document.getElementById('announcementForm').addEventListener('submit', async function(e) { e.preventDefault(); const title = document.getElementById('announcementTitle').value; const content = document.getElementById('announcementContent').value; const batchId = document.getElementById('announcementBatchSelect').value; const feedback = document.getElementById('announcementFeedback'); await addAnnouncement(title, content, batchId); feedback.innerHTML = `<p class="text-green-600">Announcement posted.</p>`; this.reset(); setTimeout(() => feedback.innerHTML = '', 3000); });
+            document.getElementById('routineForm').addEventListener('submit', async function(e) { e.preventDefault(); const batchId = document.getElementById('routineBatchSelect').value; const content = document.getElementById('routineContent').value; const feedback = document.getElementById('routineFeedback'); if (!batchId) { feedback.innerHTML = `<p class="text-red-500">Please select a batch.</p>`; return; } await setRoutine(batchId, content); feedback.innerHTML = `<p class="text-green-600">Routine has been set.</p>`; this.reset(); setTimeout(() => feedback.innerHTML = '', 3000); });
+            document.getElementById('examForm').addEventListener('submit', async function(e) { e.preventDefault(); const examData = { title: document.getElementById('examTitle').value, batchId: document.getElementById('examBatch').value, duration: parseInt(document.getElementById('examDuration').value), passPercent: parseInt(document.getElementById('examPassPercent').value), questions: [] }; const questionNodes = document.querySelectorAll('#questionsContainer > div'); if (questionNodes.length === 0) { alert('Please add at least one question.'); return; } let questionRadioCounter = 0; questionNodes.forEach((node) => { questionRadioCounter++; const question = { id: `q-${questionRadioCounter}`, text: node.querySelector('[name="q-text"]').value, imageUrl: node.querySelector('[name="q-img"]').value || null, options: Array.from(node.querySelectorAll('[name="q-option"]')).map(opt => opt.value), correctAnswer: parseInt(node.querySelector(`[name="q-correct-${questionRadioCounter}"]:checked`).value), explanation: node.querySelector('[name="q-explanation"]').value }; examData.questions.push(question); }); await addExam(examData); document.getElementById('examFeedback').innerHTML = `<p class="text-green-600">Exam created successfully.</p>`; this.reset(); document.getElementById('questionsContainer').innerHTML = ''; questionCounter = 0; });
+            document.getElementById('editExamForm').addEventListener('submit', async function(e) { e.preventDefault(); const examId = document.getElementById('editExamId').value; const updatedData = { title: document.getElementById('editExamTitle').value, batchId: document.getElementById('editExamBatch').value, duration: parseInt(document.getElementById('editExamDuration').value), passPercent: parseInt(document.getElementById('editExamPassPercent').value), questions: [] }; const questionNodes = document.querySelectorAll('#editQuestionsContainer > div'); questionNodes.forEach((node, index) => { const radioName = node.querySelector('input[type="radio"]').name; const question = { id: `q-${index}`, text: node.querySelector('[name="q-text"]').value, imageUrl: node.querySelector('[name="q-img"]').value || null, options: Array.from(node.querySelectorAll('[name="q-option"]')).map(opt => opt.value), correctAnswer: parseInt(node.querySelector(`[name="${radioName}"]:checked`).value), explanation: node.querySelector('[name="q-explanation"]').value }; updatedData.questions.push(question); }); await updateExam(examId, updatedData); closeEditExamModal(); });
         });
 
-        onAuthStateChanged(auth, async user => {
-            if (user) {
-                loginScreen.classList.add('hidden');
-                if (user.email === 'admin@school.com') {
-                    currentUser = { uid: user.uid, email: user.email, role: 'admin' };
-                    adminPanel.classList.remove('hidden');
-                    studentPortal.classList.add('hidden');
-                    initAdminPanel();
-                } else {
-                    const studentId = user.email.split('@')[0];
-                    const studentDocRef = doc(db, 'students', studentId);
-                    const studentDoc = await getDoc(studentDocRef);
-                    if (studentDoc.exists()) {
-                         currentUser = { uid: user.uid, role: 'student', ...studentDoc.data(), id: studentDoc.id };
-                         studentPortal.classList.remove('hidden');
-                         adminPanel.classList.add('hidden');
-                         initStudentPortal();
-                    } else {
-                        logout();
-                    }
+        async function handleSearch() {
+            const queryText = document.getElementById('searchInput').value.toLowerCase();
+            const type = document.getElementById('searchType').value;
+
+            let filteredStudents = allStudents;
+
+            if (queryText) {
+                if (type === 'name') {
+                    filteredStudents = allStudents.filter(s => s.name.toLowerCase().includes(queryText));
+                } else if (type === 'email') {
+                    filteredStudents = allStudents.filter(s => s.email.toLowerCase().includes(queryText));
+                } else if (type === 'batch') {
+                    const matchingBatches = allBatches.filter(b => b.name.toLowerCase().includes(queryText));
+                    const matchingBatchIds = matchingBatches.map(b => b.id);
+                    filteredStudents = allStudents.filter(s => matchingBatchIds.includes(s.batchId));
                 }
+            }
+            renderStudentList(filteredStudents);
+        }
+        
+        window.handleInBatchSearch = function(inputElement, batchId) {
+            const queryText = inputElement.value.toLowerCase();
+            const studentsInBatch = allStudents.filter(s => s.batchId === batchId);
+            const container = document.getElementById(`student-list-${batchId}`);
+            
+            let filtered = studentsInBatch;
+            if (queryText) {
+                filtered = studentsInBatch.filter(s => s.name.toLowerCase().includes(queryText) || s.email.toLowerCase().includes(queryText));
+            }
+            
+            let studentHTML = '<p class="text-sm text-slate-500 pl-4 py-2">No matching students found.</p>';
+            if (filtered.length > 0) {
+                studentHTML = filtered.map(s => `<div class="text-sm pl-4 py-2 border-t">${s.name}</div>`).join('');
+            }
+            container.innerHTML = studentHTML;
+        }
+
+        window.handleDeleteStudent = async function(id) { await deleteStudent(id); }
+        window.handleDeleteAnnouncement = async function(id) { await deleteAnnouncement(id); }
+        window.handleDeleteExam = async function(id) { await deleteExam(id); }
+        window.logoutStudent = function() { currentStudent = null; showView('mainView'); }
+        window.logoutAdmin = function() { signOut(auth); }
+        
+        onAuthStateChanged(auth, user => {
+            if (user) {
+                showView('adminDashboardView');
             } else {
-                currentUser = null;
-                adminPanel.classList.add('hidden');
-                studentPortal.classList.add('hidden');
-                loginScreen.classList.remove('hidden');
+                showView('mainView');
+                detachRealtimeListeners();
             }
         });
-        
-        const logout = () => {
-            signOut(auth);
-        };
-        document.getElementById('logout-btn-admin').addEventListener('click', logout);
-        document.getElementById('logout-btn-student').addEventListener('click', logout);
 
-        // --- STUDENT PORTAL & EXAM LOGIC (using mock data for simplicity, replace with Firestore calls) ---
-        // This section uses local arrays for demonstration. A full implementation would fetch this from Firestore.
-        let exams = [];
-        let studentExamHistory = [];
-
-        const initStudentPortal = async () => {
-            // Fetch exams and history from Firestore
-            const examsSnapshot = await getDocs(collection(db, 'exams'));
-            exams = examsSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-
-            const historySnapshot = await getDocs(collection(db, 'studentExamHistory'));
-            studentExamHistory = historySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-
-            const studentMenuItems = document.querySelectorAll('.student-menu-item');
-            const studentContentSections = document.querySelectorAll('.student-content-section');
-            studentMenuItems.forEach(item => { item.addEventListener('click', (e) => { e.preventDefault(); studentMenuItems.forEach(i => i.classList.remove('active')); item.classList.add('active'); const targetId = item.getAttribute('data-target'); studentContentSections.forEach(section => { section.id === targetId ? section.classList.remove('hidden') : section.classList.add('hidden'); }); }); });
-            document.getElementById('student-welcome-name').textContent = currentUser.name;
-            renderStudentExams();
-        };
-
-        const renderStudentExams = () => {
-            const studentExamList = document.getElementById('student-exam-list');
-            const myExams = exams.filter(ex => ex.className === currentUser.className).sort((a, b) => new Date(a.date) - new Date(b.date));
-            
-            studentExamList.innerHTML = '';
-            let previousExamPassed = true;
-
-            if (myExams.length === 0) {
-                studentExamList.innerHTML = `<p class="text-slate-500">You have no exams scheduled.</p>`;
-            } else {
-                myExams.forEach((ex) => {
-                    const history = studentExamHistory.find(h => h.studentId === currentUser.id && h.examId === ex.id);
-                    let examPassed = false;
-                    if (history) {
-                        const scorePercent = (history.score / ex.questions.length) * 100;
-                        examPassed = scorePercent >= ex.passingMark;
-                    }
-
-                    const isLocked = !previousExamPassed || ex.questions.length === 0;
-                    const buttonClass = isLocked ? 'bg-slate-400 cursor-not-allowed' : 'bg-green-600 hover:bg-green-700';
-                    let buttonText = 'Start Exam';
-                    if (isLocked && ex.questions.length > 0) buttonText = '<i class="fas fa-lock mr-2"></i>Locked';
-                    if (isLocked && ex.questions.length === 0) buttonText = 'Not Ready';
-                    if (history) buttonText = 'View Results';
-
-                    studentExamList.innerHTML += `<div class="bg-white p-5 rounded-lg shadow-md flex justify-between items-center"><div><h3 class="font-bold text-lg text-slate-800">${ex.title}</h3><p class="text-slate-600">Subject: ${ex.subject} | Date: ${ex.date}</p><p class="text-sm text-slate-500">Passing Mark: ${ex.passingMark}% | Questions: ${ex.questions.length}</p></div><button onclick="handleExamAction('${ex.id}', ${history ? true : false})" class="text-white px-4 py-2 rounded-md ${buttonClass}" ${isLocked && !history ? 'disabled' : ''}>${buttonText}</button></div>`;
-                    
-                    previousExamPassed = examPassed;
-                });
-            }
-            document.getElementById('student-upcoming-exams').textContent = myExams.length;
-        };
-        
-        // ... The rest of the student-side JS remains the same as it manipulates the fetched data
-        
-        // --- ADMIN PANEL LOGIC ---
-        const initAdminPanel = () => {
-            if (isAdminPanelInitialized) return;
-            // Setup event listeners for forms, buttons, etc.
-            // All render functions will now fetch from Firestore
-            isAdminPanelInitialized = true;
-        };
-
-        // ... All other functions would be converted to use async/await with Firestore calls.
-        // For brevity, the core logic is preserved but would need full conversion.
     </script>
 </body>
 </html>
