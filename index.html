@@ -27,6 +27,7 @@
         .tab-active {
             border-bottom-color: #0284c7; /* sky-600 */
             color: #0284c7; /* sky-600 */
+            background-color: #eff6ff; /* blue-50 */
         }
         .accordion-content {
             max-height: 0;
@@ -40,198 +41,219 @@
 
         /* Modal Animation */
         .modal {
-            transition: opacity 0.3s ease, transform 0.3s ease;
+            transition: opacity 0.2s ease, transform 0.2s ease;
         }
         .modal.hidden {
             opacity: 0;
             transform: scale(0.95);
             pointer-events: none;
         }
+        .sidebar-icon {
+            width: 20px;
+            height: 20px;
+        }
     </style>
 </head>
-<body class="text-slate-800 flex flex-col items-center justify-center min-h-screen py-8">
+<body class="text-slate-800">
 
-    <div class="w-full max-w-6xl mx-auto p-4">
+    <div id="app-container" class="w-full h-screen">
 
         <!-- Main Landing View -->
-        <div id="mainView" class="view bg-white p-8 rounded-xl shadow-xl text-center max-w-md mx-auto">
-            <h1 class="text-3xl font-bold mb-2 text-slate-900">Shariar's Medical Academy</h1>
-            <p class="text-slate-600 mb-8">Select your portal to continue.</p>
-            <div class="flex flex-col space-y-4">
-                <button onclick="showView('adminAuthView')" class="w-full bg-sky-600 text-white font-semibold py-3 px-4 rounded-lg hover:bg-sky-700 transition-all duration-300 transform hover:scale-105">Admin Portal</button>
-                <button onclick="showView('studentLoginView')" class="w-full bg-slate-700 text-white font-semibold py-3 px-4 rounded-lg hover:bg-slate-800 transition-all duration-300 transform hover:scale-105">Student Portal</button>
+        <div id="mainView" class="view flex items-center justify-center w-full h-full">
+            <div class="bg-white p-10 rounded-xl shadow-2xl text-center max-w-md mx-auto">
+                <h1 class="text-4xl font-bold mb-2 text-slate-900">Shariar's Medical Academy</h1>
+                <p class="text-slate-600 mb-8">Welcome. Please select your portal to continue.</p>
+                <div class="flex flex-col space-y-4">
+                    <button onclick="showView('adminAuthView')" class="w-full bg-sky-600 text-white font-semibold py-3 px-4 rounded-lg hover:bg-sky-700 transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-blue-300">Admin Portal</button>
+                    <button onclick="showView('studentLoginView')" class="w-full bg-slate-700 text-white font-semibold py-3 px-4 rounded-lg hover:bg-slate-800 transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-slate-300">Student Portal</button>
+                </div>
             </div>
         </div>
         
         <!-- Admin Auth Views -->
-        <div id="adminAuthView" class="view hidden bg-white p-8 rounded-xl shadow-xl text-center max-w-md mx-auto">
-            <button onclick="showView('mainView')" class="text-sky-600 hover:text-sky-800 mb-4 text-left w-full">&larr; Back</button>
-            <h2 class="text-2xl font-bold mb-6">Admin Portal</h2>
-            <div class="flex flex-col space-y-4">
-                <button onclick="showView('adminLoginView')" class="w-full bg-sky-500 text-white font-semibold py-3 px-4 rounded-lg hover:bg-sky-600 transition-all duration-300">Login</button>
+        <div id="adminAuthView" class="view hidden flex items-center justify-center w-full h-full">
+            <div class="bg-white p-10 rounded-xl shadow-2xl text-center max-w-md mx-auto">
+                <button onclick="showView('mainView')" class="text-blue-600 hover:text-blue-800 mb-6 text-left w-full">&larr; Back to Main</button>
+                <h2 class="text-3xl font-bold mb-8">Admin Portal</h2>
+                <div class="flex flex-col space-y-4">
+                    <button onclick="showView('adminLoginView')" class="w-full bg-blue-500 text-white font-semibold py-3 px-4 rounded-lg hover:bg-blue-600 transition-all duration-300">Login</button>
+                </div>
             </div>
         </div>
-        <div id="adminLoginView" class="view hidden bg-white p-8 rounded-xl shadow-xl max-w-md mx-auto">
-            <button onclick="showView('adminAuthView')" class="text-sky-600 hover:text-sky-800 mb-4">&larr; Back</button>
-            <h2 class="text-2xl font-bold mb-6 text-center">Admin Login</h2>
-            <form id="adminLoginForm" class="space-y-6">
-                <input type="email" id="adminLoginEmail" placeholder="Email" required class="mt-1 block w-full px-3 py-2 border border-slate-300 rounded-md focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-sky-500">
-                <input type="password" id="adminLoginPassword" placeholder="Password" required class="mt-1 block w-full px-3 py-2 border border-slate-300 rounded-md focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-sky-500">
-                <button type="submit" class="w-full flex justify-center py-3 px-4 rounded-lg text-white bg-sky-600 hover:bg-sky-700 transition-colors">Login</button>
-            </form>
-            <div id="adminLoginFeedback" class="mt-4 text-center text-red-600 font-medium"></div>
+        <div id="adminLoginView" class="view hidden flex items-center justify-center w-full h-full">
+            <div class="bg-white p-10 rounded-xl shadow-2xl max-w-md mx-auto w-full">
+                <button onclick="showView('adminAuthView')" class="text-blue-600 hover:text-blue-800 mb-6">&larr; Back</button>
+                <h2 class="text-3xl font-bold mb-8 text-center">Admin Login</h2>
+                <form id="adminLoginForm" class="space-y-6">
+                    <input type="email" id="adminLoginEmail" placeholder="Email" required class="mt-1 block w-full px-4 py-3 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    <input type="password" id="adminLoginPassword" placeholder="Password" required class="mt-1 block w-full px-4 py-3 border border-slate-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    <button type="submit" class="w-full flex justify-center py-3 px-4 rounded-lg text-white bg-blue-600 hover:bg-blue-700 transition-colors font-semibold">Login</button>
+                </form>
+                <div id="adminLoginFeedback" class="mt-4 text-center text-red-600 font-medium"></div>
+            </div>
         </div>
         
         <!-- Admin Dashboard View -->
-        <div id="adminDashboardView" class="view hidden bg-white p-8 rounded-xl shadow-xl">
-            <div class="flex justify-between items-center mb-4 border-b border-slate-200 pb-4">
-                 <h2 class="text-2xl font-bold text-slate-900">Admin Dashboard</h2>
-                 <button onclick="logoutAdmin()" class="text-sm text-sky-600 hover:text-sky-800 font-semibold">Logout</button>
-            </div>
-            
-            <!-- Tabs -->
-            <div class="border-b border-slate-200">
-                <nav class="-mb-px flex space-x-8" aria-label="Tabs">
-                    <button onclick="switchTab('studentManagementTab', this)" class="admin-tab whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm tab-active">Students</button>
-                    <button onclick="switchTab('batchManagementTab', this)" class="admin-tab whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm text-slate-500">Batches</button>
-                    <button onclick="switchTab('contentManagementTab', this)" class="admin-tab whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm text-slate-500">Content</button>
-                    <button onclick="switchTab('examManagementTab', this)" class="admin-tab whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm text-slate-500">Exams</button>
-                </nav>
-            </div>
-
-            <!-- Student Management Tab Content -->
-            <div id="studentManagementTab" class="tab-content mt-8">
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-                    <!-- Left Column: Create Students -->
-                    <div class="space-y-6">
-                        <form id="adminForm" class="space-y-4 p-4 border border-slate-200 rounded-lg bg-slate-50">
-                            <h3 class="text-lg font-medium text-slate-900">Create New Student</h3>
-                            <input type="text" id="studentName" placeholder="Student Name" required class="mt-1 block w-full px-3 py-2 border border-slate-300 rounded-md focus:outline-none focus:ring-2 focus:ring-sky-500">
-                            <input type="email" id="studentEmail" placeholder="Student Email" required class="mt-1 block w-full px-3 py-2 border border-slate-300 rounded-md focus:outline-none focus:ring-2 focus:ring-sky-500">
-                            <select id="studentBatch" required class="mt-1 block w-full px-3 py-2 border border-slate-300 bg-white rounded-md focus:outline-none focus:ring-2 focus:ring-sky-500"><option value="">Assign to Batch</option></select>
-                            <select id="paymentStatus" required class="mt-1 block w-full px-3 py-2 border border-slate-300 bg-white rounded-md focus:outline-none focus:ring-2 focus:ring-sky-500">
-                                <option value="">Select Payment Status</option>
-                                <option value="not-paid">Not Paid</option>
-                                <option value="first-installment">First Installment</option>
-                                <option value="one-time">One Time Payment</option>
-                                <option value="paid">Paid</option>
-                            </select>
-                            <input type="text" id="paymentAmount" placeholder="Amount (e.g., 250 USD)" required class="mt-1 block w-full px-3 py-2 border border-slate-300 rounded-md focus:outline-none focus:ring-2 focus:ring-sky-500">
-                            <div>
-                                <label for="paymentDate" class="text-sm font-medium text-slate-700">Payment Date</label>
-                                <input type="date" id="paymentDate" required class="mt-1 block w-full px-3 py-2 border border-slate-300 rounded-md focus:outline-none focus:ring-2 focus:ring-sky-500">
-                            </div>
-                            <button type="submit" class="w-full flex justify-center py-3 px-4 rounded-lg text-white bg-sky-600 hover:bg-sky-700 transition-colors">Create Student</button>
-                        </form>
-                        <div id="adminFeedback" class="mt-4 text-center"></div>
-                    </div>
-
-                    <!-- Right Column: Student List & Search -->
-                    <div class="space-y-4">
-                        <div class="flex space-x-2">
-                            <input type="text" id="searchInput" placeholder="Search..." class="block w-full px-3 py-2 border border-slate-300 rounded-md focus:outline-none focus:ring-2 focus:ring-sky-500">
-                            <select id="searchType" class="block w-48 px-3 py-2 border border-slate-300 bg-white rounded-md focus:outline-none focus:ring-2 focus:ring-sky-500">
-                                <option value="name">By Name</option>
-                                <option value="email">By Email</option>
-                                <option value="batch">By Batch</option>
-                            </select>
-                        </div>
-                        <div id="studentList" class="h-96 overflow-y-auto custom-scrollbar bg-slate-100 p-3 rounded-lg border border-slate-200"></div>
-                    </div>
+        <div id="adminDashboardView" class="view hidden h-screen flex">
+            <!-- Sidebar -->
+            <nav class="w-64 bg-white shadow-lg flex flex-col">
+                <div class="p-6 border-b border-slate-200">
+                    <h2 class="text-xl font-bold text-slate-800">Admin Panel</h2>
                 </div>
-            </div>
+                <div class="flex-grow p-4">
+                    <button onclick="switchTab('studentManagementTab', this)" class="admin-tab w-full text-left px-4 py-3 rounded-lg flex items-center space-x-3 tab-active">
+                        <i class="fas fa-users sidebar-icon"></i> <span>Students</span>
+                    </button>
+                    <button onclick="switchTab('batchManagementTab', this)" class="admin-tab w-full text-left px-4 py-3 rounded-lg flex items-center space-x-3 text-slate-600 hover:bg-slate-100">
+                        <i class="fas fa-layer-group sidebar-icon"></i> <span>Batches</span>
+                    </button>
+                    <button onclick="switchTab('contentManagementTab', this)" class="admin-tab w-full text-left px-4 py-3 rounded-lg flex items-center space-x-3 text-slate-600 hover:bg-slate-100">
+                        <i class="fas fa-bullhorn sidebar-icon"></i> <span>Content</span>
+                    </button>
+                    <button onclick="switchTab('examManagementTab', this)" class="admin-tab w-full text-left px-4 py-3 rounded-lg flex items-center space-x-3 text-slate-600 hover:bg-slate-100">
+                        <i class="fas fa-file-alt sidebar-icon"></i> <span>Exams</span>
+                    </button>
+                </div>
+                <div class="p-4 border-t border-slate-200">
+                    <button onclick="logoutAdmin()" class="w-full text-left px-4 py-3 rounded-lg flex items-center space-x-3 text-slate-600 hover:bg-red-50 hover:text-red-600">
+                        <i class="fas fa-sign-out-alt sidebar-icon"></i> <span>Logout</span>
+                    </button>
+                </div>
+            </nav>
 
-            <!-- Batch Management Tab Content -->
-            <div id="batchManagementTab" class="tab-content hidden mt-8">
-                 <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-                    <!-- Left Column: Create Batch & Export -->
-                    <div class="space-y-8">
-                        <div class="space-y-4 p-4 border border-slate-200 rounded-lg bg-slate-50 h-fit">
-                            <h3 class="text-lg font-medium text-slate-900">Create New Batch</h3>
-                            <form id="batchForm" class="flex items-center space-x-2">
-                                <input type="text" id="batchName" placeholder="Batch Name (e.g., Course D)" required class="block w-full px-3 py-2 border border-slate-300 rounded-md focus:outline-none focus:ring-2 focus:ring-sky-500">
-                                <button type="submit" class="px-4 py-2 text-sm font-medium text-white bg-sky-600 rounded-lg hover:bg-sky-700 transition-colors">Create</button>
-                            </form>
-                            <div id="batchFeedback" class="text-sm mt-2"></div>
-                        </div>
-                        <div class="space-y-4 p-4 border border-slate-200 rounded-lg bg-slate-50 h-fit">
-                            <h3 class="text-lg font-medium text-slate-900">Export Batch Data</h3>
-                            <div class="flex items-center space-x-2">
-                                <select id="exportBatchSelect" class="block w-full px-3 py-2 border border-slate-300 bg-white rounded-md focus:outline-none focus:ring-2 focus:ring-sky-500"><option value="">Select a Batch</option></select>
-                                <button id="exportBtn" class="px-4 py-2 text-sm font-medium text-white bg-green-600 rounded-lg hover:bg-green-700 transition-colors">Download Excel</button>
-                            </div>
-                            <div id="exportFeedback" class="text-sm mt-2"></div>
-                        </div>
-                    </div>
-                    <!-- Right Column: Batch List -->
-                    <div class="space-y-4">
-                        <h3 class="text-lg font-medium text-slate-900">All Batches</h3>
-                        <div id="batchList" class="h-[28rem] overflow-y-auto custom-scrollbar bg-slate-100 p-3 rounded-lg border border-slate-200"></div>
-                    </div>
-                </div>
-            </div>
-            
-            <!-- Content Management Tab -->
-            <div id="contentManagementTab" class="tab-content hidden mt-8">
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-                    <!-- Announcements -->
-                    <div class="space-y-4 p-4 border border-slate-200 rounded-lg bg-slate-50">
-                        <h3 class="text-lg font-medium text-slate-900">Announcements</h3>
-                        <form id="announcementForm" class="space-y-3">
-                            <input type="text" id="announcementTitle" placeholder="Announcement Title" required class="block w-full px-3 py-2 border border-slate-300 rounded-md focus:outline-none focus:ring-2 focus:ring-sky-500">
-                            <select id="announcementBatchSelect" class="block w-full px-3 py-2 border border-slate-300 bg-white rounded-md focus:outline-none focus:ring-2 focus:ring-sky-500"><option value="all">All Batches</option></select>
-                            <textarea id="announcementContent" placeholder="Announcement Details..." required rows="4" class="block w-full px-3 py-2 border border-slate-300 rounded-md focus:outline-none focus:ring-2 focus:ring-sky-500"></textarea>
-                            <button type="submit" class="w-full py-2 px-4 rounded-lg text-white bg-sky-600 hover:bg-sky-700 transition-colors">Post Announcement</button>
-                        </form>
-                        <div id="announcementFeedback" class="text-sm"></div>
-                        <div id="announcementListAdmin" class="h-60 overflow-y-auto custom-scrollbar space-y-2"></div>
-                    </div>
-                    <!-- Class Routines -->
-                    <div class="space-y-4 p-4 border border-slate-200 rounded-lg bg-slate-50">
-                        <h3 class="text-lg font-medium text-slate-900">Class Routines</h3>
-                        <form id="routineForm" class="space-y-3">
-                            <select id="routineBatchSelect" required class="block w-full px-3 py-2 border border-slate-300 bg-white rounded-md focus:outline-none focus:ring-2 focus:ring-sky-500"><option value="">Select a Batch</option></select>
-                            <textarea id="routineContent" placeholder="Enter routine details or a link to an image/PDF..." required rows="6" class="block w-full px-3 py-2 border border-slate-300 rounded-md focus:outline-none focus:ring-2 focus:ring-sky-500"></textarea>
-                            <button type="submit" class="w-full py-2 px-4 rounded-lg text-white bg-sky-600 hover:bg-sky-700 transition-colors">Set Routine</button>
-                        </form>
-                        <div id="routineFeedback" class="text-sm"></div>
-                    </div>
-                </div>
-            </div>
-            
-            <!-- Exam Management Tab -->
-            <div id="examManagementTab" class="tab-content hidden mt-8">
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-                    <!-- Create Exam Form -->
-                    <div class="space-y-4 p-4 border border-slate-200 rounded-lg bg-slate-50">
-                        <h3 class="text-lg font-medium text-slate-900">Create New Mock Exam</h3>
-                        <form id="examForm" class="space-y-4">
-                            <input type="text" id="examTitle" placeholder="Exam Title" required class="block w-full px-3 py-2 border border-slate-300 rounded-md focus:outline-none focus:ring-2 focus:ring-sky-500">
-                            <div class="grid grid-cols-2 gap-4">
-                                <select id="examBatch" required class="block w-full px-3 py-2 border border-slate-300 bg-white rounded-md focus:outline-none focus:ring-2 focus:ring-sky-500"><option value="">Assign to Batch</option></select>
-                                <input type="number" id="examDuration" placeholder="Duration (minutes)" required class="block w-full px-3 py-2 border border-slate-300 rounded-md focus:outline-none focus:ring-2 focus:ring-sky-500">
-                            </div>
-                            <input type="number" id="examPassPercent" placeholder="Pass Percentage %" required min="1" max="100" class="block w-full px-3 py-2 border border-slate-300 rounded-md focus:outline-none focus:ring-2 focus:ring-sky-500">
-                            
-                            <div class="border-t border-slate-200 pt-4">
-                                <h4 class="font-medium text-slate-800 mb-2">Questions</h4>
-                                <div id="questionsContainer" class="space-y-4">
-                                    <!-- Questions will be added here dynamically -->
+            <!-- Main Content -->
+            <main class="flex-1 p-8 overflow-y-auto">
+                <!-- Student Management Tab Content -->
+                <div id="studentManagementTab" class="tab-content">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                        <!-- Left Column: Create Students -->
+                        <div class="space-y-6">
+                            <form id="adminForm" class="space-y-4 p-4 border border-slate-200 rounded-lg bg-slate-50">
+                                <h3 class="text-lg font-medium text-slate-900">Create New Student</h3>
+                                <input type="text" id="studentName" placeholder="Student Name" required class="mt-1 block w-full px-3 py-2 border border-slate-300 rounded-md focus:outline-none focus:ring-2 focus:ring-sky-500">
+                                <input type="email" id="studentEmail" placeholder="Student Email" required class="mt-1 block w-full px-3 py-2 border border-slate-300 rounded-md focus:outline-none focus:ring-2 focus:ring-sky-500">
+                                <select id="studentBatch" required class="mt-1 block w-full px-3 py-2 border border-slate-300 bg-white rounded-md focus:outline-none focus:ring-2 focus:ring-sky-500"><option value="">Assign to Batch</option></select>
+                                <select id="paymentStatus" required class="mt-1 block w-full px-3 py-2 border border-slate-300 bg-white rounded-md focus:outline-none focus:ring-2 focus:ring-sky-500">
+                                    <option value="">Select Payment Status</option>
+                                    <option value="not-paid">Not Paid</option>
+                                    <option value="first-installment">First Installment</option>
+                                    <option value="one-time">One Time Payment</option>
+                                    <option value="paid">Paid</option>
+                                </select>
+                                <input type="text" id="paymentAmount" placeholder="Amount (e.g., 250 USD)" required class="mt-1 block w-full px-3 py-2 border border-slate-300 rounded-md focus:outline-none focus:ring-2 focus:ring-sky-500">
+                                <div>
+                                    <label for="paymentDate" class="text-sm font-medium text-slate-700">Payment Date</label>
+                                    <input type="date" id="paymentDate" required class="mt-1 block w-full px-3 py-2 border border-slate-300 rounded-md focus:outline-none focus:ring-2 focus:ring-sky-500">
                                 </div>
-                                <button type="button" onclick="addQuestion()" class="mt-4 text-sm text-sky-600 hover:text-sky-800 font-semibold">+ Add Question</button>
+                                <button type="submit" class="w-full flex justify-center py-3 px-4 rounded-lg text-white bg-sky-600 hover:bg-sky-700 transition-colors">Create Student</button>
+                            </form>
+                            <div id="adminFeedback" class="mt-4 text-center"></div>
+                        </div>
+
+                        <!-- Right Column: Student List & Search -->
+                        <div class="space-y-4">
+                            <div class="flex space-x-2">
+                                <input type="text" id="searchInput" placeholder="Search..." class="block w-full px-3 py-2 border border-slate-300 rounded-md focus:outline-none focus:ring-2 focus:ring-sky-500">
+                                <select id="searchType" class="block w-48 px-3 py-2 border border-slate-300 bg-white rounded-md focus:outline-none focus:ring-2 focus:ring-sky-500">
+                                    <option value="name">By Name</option>
+                                    <option value="email">By Email</option>
+                                    <option value="batch">By Batch</option>
+                                </select>
                             </div>
-                            
-                            <button type="submit" class="w-full py-3 px-4 rounded-lg text-white bg-sky-600 hover:bg-sky-700 transition-colors">Create Exam</button>
-                        </form>
-                        <div id="examFeedback" class="text-sm mt-2"></div>
-                    </div>
-                    <!-- Existing Exams List -->
-                    <div class="space-y-4">
-                        <h3 class="text-lg font-medium text-slate-900">Existing Exams</h3>
-                        <div id="examListAdmin" class="h-[32rem] overflow-y-auto custom-scrollbar bg-slate-100 p-3 rounded-lg border border-slate-200"></div>
+                            <div id="studentList" class="h-96 overflow-y-auto custom-scrollbar bg-slate-100 p-3 rounded-lg border border-slate-200"></div>
+                        </div>
                     </div>
                 </div>
-            </div>
+                <!-- Batch Management Tab Content -->
+                <div id="batchManagementTab" class="tab-content hidden">
+                     <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                        <!-- Left Column: Create Batch & Export -->
+                        <div class="space-y-8">
+                            <div class="space-y-4 p-4 border border-slate-200 rounded-lg bg-slate-50 h-fit">
+                                <h3 class="text-lg font-medium text-slate-900">Create New Batch</h3>
+                                <form id="batchForm" class="flex items-center space-x-2">
+                                    <input type="text" id="batchName" placeholder="Batch Name (e.g., Course D)" required class="block w-full px-3 py-2 border border-slate-300 rounded-md focus:outline-none focus:ring-2 focus:ring-sky-500">
+                                    <button type="submit" class="px-4 py-2 text-sm font-medium text-white bg-sky-600 rounded-lg hover:bg-sky-700 transition-colors">Create</button>
+                                </form>
+                                <div id="batchFeedback" class="text-sm mt-2"></div>
+                            </div>
+                            <div class="space-y-4 p-4 border border-slate-200 rounded-lg bg-slate-50 h-fit">
+                                <h3 class="text-lg font-medium text-slate-900">Export Batch Data</h3>
+                                <div class="flex items-center space-x-2">
+                                    <select id="exportBatchSelect" class="block w-full px-3 py-2 border border-slate-300 bg-white rounded-md focus:outline-none focus:ring-2 focus:ring-sky-500"><option value="">Select a Batch</option></select>
+                                    <button id="exportBtn" class="px-4 py-2 text-sm font-medium text-white bg-green-600 rounded-lg hover:bg-green-700 transition-colors">Download Excel</button>
+                                </div>
+                                <div id="exportFeedback" class="text-sm mt-2"></div>
+                            </div>
+                        </div>
+                        <!-- Right Column: Batch List -->
+                        <div class="space-y-4">
+                            <h3 class="text-lg font-medium text-slate-900">All Batches</h3>
+                            <div id="batchList" class="h-[28rem] overflow-y-auto custom-scrollbar bg-slate-100 p-3 rounded-lg border border-slate-200"></div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Content Management Tab -->
+                <div id="contentManagementTab" class="tab-content hidden">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                        <!-- Announcements -->
+                        <div class="space-y-4 p-4 border border-slate-200 rounded-lg bg-slate-50">
+                            <h3 class="text-lg font-medium text-slate-900">Announcements</h3>
+                            <form id="announcementForm" class="space-y-3">
+                                <input type="text" id="announcementTitle" placeholder="Announcement Title" required class="block w-full px-3 py-2 border border-slate-300 rounded-md focus:outline-none focus:ring-2 focus:ring-sky-500">
+                                <select id="announcementBatchSelect" class="block w-full px-3 py-2 border border-slate-300 bg-white rounded-md focus:outline-none focus:ring-2 focus:ring-sky-500"><option value="all">All Batches</option></select>
+                                <textarea id="announcementContent" placeholder="Announcement Details..." required rows="4" class="block w-full px-3 py-2 border border-slate-300 rounded-md focus:outline-none focus:ring-2 focus:ring-sky-500"></textarea>
+                                <button type="submit" class="w-full py-2 px-4 rounded-lg text-white bg-sky-600 hover:bg-sky-700 transition-colors">Post Announcement</button>
+                            </form>
+                            <div id="announcementFeedback" class="text-sm"></div>
+                            <div id="announcementListAdmin" class="h-60 overflow-y-auto custom-scrollbar space-y-2"></div>
+                        </div>
+                        <!-- Class Routines -->
+                        <div class="space-y-4 p-4 border border-slate-200 rounded-lg bg-slate-50">
+                            <h3 class="text-lg font-medium text-slate-900">Class Routines</h3>
+                            <form id="routineForm" class="space-y-3">
+                                <select id="routineBatchSelect" required class="block w-full px-3 py-2 border border-slate-300 bg-white rounded-md focus:outline-none focus:ring-2 focus:ring-sky-500"><option value="">Select a Batch</option></select>
+                                <textarea id="routineContent" placeholder="Enter routine details or a link to an image/PDF..." required rows="6" class="block w-full px-3 py-2 border border-slate-300 rounded-md focus:outline-none focus:ring-2 focus:ring-sky-500"></textarea>
+                                <button type="submit" class="w-full py-2 px-4 rounded-lg text-white bg-sky-600 hover:bg-sky-700 transition-colors">Set Routine</button>
+                            </form>
+                            <div id="routineFeedback" class="text-sm"></div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Exam Management Tab -->
+                <div id="examManagementTab" class="tab-content hidden">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                        <!-- Create Exam Form -->
+                        <div class="space-y-4 p-4 border border-slate-200 rounded-lg bg-slate-50">
+                            <h3 class="text-lg font-medium text-slate-900">Create New Mock Exam</h3>
+                            <form id="examForm" class="space-y-4">
+                                <input type="text" id="examTitle" placeholder="Exam Title" required class="block w-full px-3 py-2 border border-slate-300 rounded-md focus:outline-none focus:ring-2 focus:ring-sky-500">
+                                <div class="grid grid-cols-2 gap-4">
+                                    <select id="examBatch" required class="block w-full px-3 py-2 border border-slate-300 bg-white rounded-md focus:outline-none focus:ring-2 focus:ring-sky-500"><option value="">Assign to Batch</option></select>
+                                    <input type="number" id="examDuration" placeholder="Duration (minutes)" required class="block w-full px-3 py-2 border border-slate-300 rounded-md focus:outline-none focus:ring-2 focus:ring-sky-500">
+                                </div>
+                                <input type="number" id="examPassPercent" placeholder="Pass Percentage %" required min="1" max="100" class="block w-full px-3 py-2 border border-slate-300 rounded-md focus:outline-none focus:ring-2 focus:ring-sky-500">
+                                
+                                <div class="border-t border-slate-200 pt-4">
+                                    <h4 class="font-medium text-slate-800 mb-2">Questions</h4>
+                                    <div id="questionsContainer" class="space-y-4">
+                                        <!-- Questions will be added here dynamically -->
+                                    </div>
+                                    <button type="button" onclick="addQuestion()" class="mt-4 text-sm text-sky-600 hover:text-sky-800 font-semibold">+ Add Question</button>
+                                </div>
+                                
+                                <button type="submit" class="w-full py-3 px-4 rounded-lg text-white bg-sky-600 hover:bg-sky-700 transition-colors">Create Exam</button>
+                            </form>
+                            <div id="examFeedback" class="text-sm mt-2"></div>
+                        </div>
+                        <!-- Existing Exams List -->
+                        <div class="space-y-4">
+                            <h3 class="text-lg font-medium text-slate-900">Existing Exams</h3>
+                            <div id="examListAdmin" class="h-[32rem] overflow-y-auto custom-scrollbar bg-slate-100 p-3 rounded-lg border border-slate-200"></div>
+                        </div>
+                    </div>
+                </div>
+            </main>
         </div>
 
         <!-- Student Portal Views -->
@@ -391,6 +413,20 @@
                 </form>
             </div>
         </div>
+        
+        <div id="editBatchModal" class="modal hidden fixed inset-0 bg-slate-900 bg-opacity-50 overflow-y-auto h-full w-full flex items-center justify-center">
+            <div class="relative mx-auto p-8 border w-full max-w-md shadow-lg rounded-md bg-white">
+                <h3 class="text-lg font-medium text-slate-900 mb-4">Edit Batch Name</h3>
+                <form id="editBatchForm" class="space-y-4">
+                    <input type="hidden" id="editBatchId">
+                    <input type="text" id="editBatchName" placeholder="Batch Name" required class="block w-full px-3 py-2 border border-slate-300 rounded-md focus:outline-none focus:ring-2 focus:ring-sky-500">
+                    <div class="flex justify-end space-x-2 pt-4">
+                        <button type="button" onclick="closeEditBatchModal()" class="px-4 py-2 bg-slate-200 text-slate-800 rounded-md hover:bg-slate-300 transition-colors">Cancel</button>
+                        <button type="submit" class="px-4 py-2 bg-sky-600 text-white rounded-md hover:bg-sky-700 transition-colors">Save Name</button>
+                    </div>
+                </form>
+            </div>
+        </div>
 
     </div>
     
@@ -463,7 +499,6 @@
         let unsubscribeStudents, unsubscribeBatches, unsubscribeAnnouncements, unsubscribeRoutines, unsubscribeExams;
 
         // --- DATABASE FUNCTIONS (NOW WITH FIREBASE!) ---
-        async function registerAdmin(email, password) { return createUserWithEmailAndPassword(auth, email, password); }
         async function loginAdmin(email, password) { return signInWithEmailAndPassword(auth, email, password); }
         async function createBatch(batchName) { return addDoc(collection(db, "batches"), { name: batchName }); }
         async function getBatchById(batchId) { return allBatches.find(b => b.id === batchId) || null; }
@@ -482,6 +517,8 @@
         async function getExamsForBatch(batchId) { const q = firestoreQuery(collection(db, "exams"), where("batchId", "==", batchId)); const querySnapshot = await getDocs(q); return querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })); }
         async function deleteExam(id) { await deleteDoc(doc(db, "exams", id)); }
         async function updateExam(id, newData) { const examRef = doc(db, "exams", id); await updateDoc(examRef, newData); }
+        async function updateBatch(id, newName) { const batchRef = doc(db, "batches", id); await updateDoc(batchRef, { name: newName }); }
+        async function deleteBatch(id) { const studentsToUpdateQuery = firestoreQuery(collection(db, "students"), where("batchId", "==", id)); const studentSnapshot = await getDocs(studentsToUpdateQuery); studentSnapshot.forEach(studentDoc => { updateDoc(doc(db, "students", studentDoc.id), { batchId: "" }); }); await deleteDoc(doc(db, "batches", id)); }
 
         // --- UI & VIEW MANAGEMENT ---
         window.showView = function(viewId) {
@@ -496,9 +533,9 @@
         window.switchTab = function(tabId, button) {
             document.querySelectorAll('.tab-content').forEach(tc => tc.classList.add('hidden'));
             document.getElementById(tabId).classList.remove('hidden');
-            document.querySelectorAll('.admin-tab').forEach(b => { b.classList.remove('tab-active'); b.classList.add('text-slate-500'); });
+            document.querySelectorAll('.admin-tab').forEach(b => { b.classList.remove('tab-active'); b.classList.add('text-slate-600', 'hover:bg-slate-100'); });
             button.classList.add('tab-active');
-            button.classList.remove('text-slate-500');
+            button.classList.remove('text-slate-600', 'hover:bg-slate-100');
         }
         
         window.switchStudentTab = function(tabId, button) {
@@ -514,6 +551,7 @@
             unsubscribeStudents = onSnapshot(collection(db, "students"), (snapshot) => {
                 allStudents = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
                 handleSearch(); // Re-run search with the new full list
+                renderBatchList(); // Re-render batches to update student counts/lists
             });
             unsubscribeBatches = onSnapshot(collection(db, "batches"), (snapshot) => {
                 allBatches = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
@@ -543,8 +581,8 @@
         // --- RENDER FUNCTIONS (now take data as argument) ---
         function renderBatchesInDropdown(batches) { const selects = [document.getElementById('studentBatch'), document.getElementById('editStudentBatch'), document.getElementById('announcementBatchSelect')]; selects.forEach(select => { const currentVal = select.value; let firstOption = '<option value="">Assign to Batch</option>'; if(select.id === 'announcementBatchSelect') firstOption = '<option value="all">All Batches</option>'; select.innerHTML = firstOption; batches.forEach(batch => { const option = document.createElement('option'); option.value = batch.id; option.textContent = batch.name; select.appendChild(option); }); select.value = currentVal; }); }
         function renderBatchesForExport(batches) { const select = document.getElementById('exportBatchSelect'); select.innerHTML = '<option value="">Select a Batch</option>'; batches.forEach(batch => { const option = document.createElement('option'); option.value = batch.id; option.textContent = batch.name; select.appendChild(option); }); }
-        function renderBatchList() { const container = document.getElementById('batchList'); container.innerHTML = ''; if (allBatches.length === 0) { container.innerHTML = `<p class="text-slate-500 text-center mt-4">No batches created yet.</p>`; return; } allBatches.forEach(batch => { const studentsInBatch = allStudents.filter(s => s.batchId === batch.id); let studentHTML = '<p class="text-sm text-slate-500 pl-4 py-2">No students in this batch.</p>'; if (studentsInBatch.length > 0) { studentHTML = studentsInBatch.map(s => `<div class="text-sm pl-4 py-2 border-t">${s.name}</div>`).join(''); } const accordionItem = ` <div class="bg-white mb-2 rounded-md shadow-sm border border-slate-200"> <button onclick="toggleAccordion(this)" class="w-full text-left p-3 font-semibold flex justify-between items-center"> <span>${batch.name}</span> <i class="fas fa-chevron-down transition-transform"></i> </button> <div class="accordion-content bg-slate-50 p-2"> <input type="text" oninput="handleInBatchSearch(this, '${batch.id}')" placeholder="Search in batch..." class="w-full p-2 mb-2 border border-slate-300 rounded-md"> <div id="student-list-${batch.id}">${studentHTML}</div> </div> </div>`; container.innerHTML += accordionItem; }); }
-        window.toggleAccordion = function(button) { const content = button.nextElementSibling; const icon = button.querySelector('i'); if (content.style.maxHeight) { content.style.maxHeight = null; icon.classList.remove('rotate-180'); } else { content.style.maxHeight = content.scrollHeight + "px"; icon.classList.add('rotate-180'); } }
+        function renderBatchList() { const container = document.getElementById('batchList'); container.innerHTML = ''; if (allBatches.length === 0) { container.innerHTML = `<p class="text-slate-500 text-center mt-4">No batches created yet.</p>`; return; } allBatches.forEach(batch => { const studentsInBatch = allStudents.filter(s => s.batchId === batch.id); let studentHTML = '<p class="text-sm text-slate-500 pl-4 py-2">No students in this batch.</p>'; if (studentsInBatch.length > 0) { studentHTML = studentsInBatch.map(s => `<div class="flex justify-between items-center text-sm pl-4 py-2 border-t"><span>${s.name}</span><div class="flex space-x-3"><button onclick="openEditModal('${s.id}')" class="text-slate-400 hover:text-blue-600"><i class="fas fa-pencil-alt"></i></button><button onclick="handleDeleteStudent('${s.id}')" class="text-slate-400 hover:text-red-600"><i class="fas fa-trash"></i></button></div></div>`).join(''); } const accordionItem = ` <div class="bg-white mb-2 rounded-md shadow-sm border border-slate-200"> <div class="w-full text-left p-3 font-semibold flex justify-between items-center"> <button onclick="toggleAccordion(this.parentElement)" class="flex-grow text-left">${batch.name}</button> <div class="flex space-x-3"> <button onclick="openEditBatchModal('${batch.id}', '${batch.name}')" class="text-slate-400 hover:text-blue-600"><i class="fas fa-pencil-alt"></i></button> <button onclick="handleDeleteBatch('${batch.id}')" class="text-slate-400 hover:text-red-600"><i class="fas fa-trash"></i></button> </div> </div> <div class="accordion-content bg-slate-50 p-2"> <input type="text" oninput="handleInBatchSearch(this, '${batch.id}')" placeholder="Search in batch..." class="w-full p-2 mb-2 border border-slate-300 rounded-md"> <div id="student-list-${batch.id}">${studentHTML}</div> </div> </div>`; container.innerHTML += accordionItem; }); }
+        window.toggleAccordion = function(buttonWrapper) { const content = buttonWrapper.nextElementSibling; const icon = buttonWrapper.querySelector('i'); if (content.style.maxHeight) { content.style.maxHeight = null; if(icon) icon.classList.remove('rotate-180'); } else { content.style.maxHeight = content.scrollHeight + "px"; if(icon) icon.classList.add('rotate-180'); } }
         function getPaymentStatusPill(status) { const statuses = { 'not-paid': 'bg-red-100 text-red-800', 'one-time': 'bg-green-100 text-green-800', 'first-installment': 'bg-yellow-100 text-yellow-800', 'second-installment': 'bg-blue-100 text-blue-800', 'paid': 'bg-green-100 text-green-800', }; const text = status.replace('-', ' ').replace(/\b\w/g, l => l.toUpperCase()); return `<span class="px-2 py-1 text-xs font-medium rounded-full ${statuses[status] || 'bg-slate-100 text-slate-800'}">${text}</span>`; }
         async function renderStudentList(studentList) { const container = document.getElementById('studentList'); container.innerHTML = ''; if (studentList.length === 0) { container.innerHTML = `<p class="text-slate-500 text-center mt-4">No students found.</p>`; return; } for (const student of studentList) { const batch = await getBatchById(student.batchId); const latestPayment = student.paymentInfo[student.paymentInfo.length - 1]; const studentCard = ` <div class="bg-white p-3 mb-2 rounded-md shadow-sm border border-slate-200"> <div class="flex justify-between items-start"> <div> <p class="font-semibold text-slate-800">${student.name} <span class="text-sm font-normal text-slate-500">(${student.id})</span></p> <p class="text-sm text-slate-600">${student.email}</p> <p class="text-sm text-sky-600 font-medium mt-1">Batch: ${batch ? batch.name : 'N/A'}</p> </div> <div class="flex space-x-2"> <button onclick="openEditModal('${student.id}')" class="text-slate-500 hover:text-sky-600"><i class="fas fa-pencil-alt"></i></button> <button onclick="handleDeleteStudent('${student.id}')" class="text-slate-500 hover:text-red-600"><i class="fas fa-trash-alt"></i></button> </div> </div> <div class="mt-2 text-right flex justify-end items-center space-x-2"> <span class="text-sm text-slate-600">${latestPayment.amount} on ${latestPayment.date}</span> ${getPaymentStatusPill(latestPayment.status)} </div> </div>`; container.innerHTML += studentCard; } }
         function renderBatchesForRoutineSelect(batches) { const select = document.getElementById('routineBatchSelect'); select.innerHTML = '<option value="">Select a Batch</option>'; batches.forEach(batch => { const option = document.createElement('option'); option.value = batch.id; option.textContent = batch.name; select.appendChild(option); }); }
@@ -565,6 +603,8 @@
         window.openEditExamModal = async function(examId) { const exam = await getExamById(examId); if (!exam) return; document.getElementById('editExamId').value = exam.id; document.getElementById('editExamTitle').value = exam.title; renderBatchesForExamSelect(allBatches); document.getElementById('editExamBatch').value = exam.batchId; document.getElementById('editExamDuration').value = exam.duration; document.getElementById('editExamPassPercent').value = exam.passPercent; const questionsContainer = document.getElementById('editQuestionsContainer'); questionsContainer.innerHTML = ''; editQuestionCounter = 0; exam.questions.forEach(q => { editQuestionCounter++; const questionHTML = ` <div id="edit-q-${editQuestionCounter}" class="p-3 border border-slate-200 rounded bg-white space-y-2"> <div class="flex justify-between items-center"> <label class="font-medium text-sm">Question ${editQuestionCounter}</label> <button type="button" onclick="removeQuestion('edit-q-${editQuestionCounter}')" class="text-red-500 text-xs"><i class="fas fa-times-circle"></i> Remove</button> </div> <textarea name="q-text" placeholder="Question Text" required class="w-full p-2 border border-slate-300 rounded">${q.text}</textarea> <input type="text" name="q-img" placeholder="Image URL (Optional)" value="${q.imageUrl || ''}" class="w-full p-2 border border-slate-300 rounded"> ${q.options.map((opt, i) => ` <div class="flex items-center space-x-2"> <input type="radio" name="edit-q-correct-${editQuestionCounter}" value="${i}" required ${q.correctAnswer === i ? 'checked' : ''}> <input type="text" name="q-option" placeholder="Option ${i+1}" value="${opt}" required class="w-full p-2 border border-slate-300 rounded"> </div>`).join('')} <textarea name="q-explanation" placeholder="Explanation" required class="w-full p-2 border border-slate-300 rounded">${q.explanation}</textarea> </div>`; questionsContainer.insertAdjacentHTML('beforeend', questionHTML); }); document.getElementById('editExamModal').classList.remove('hidden'); }
         window.addQuestionToEditForm = function() { editQuestionCounter++; const questionsContainer = document.getElementById('editQuestionsContainer'); const questionHTML = ` <div id="edit-q-${editQuestionCounter}" class="p-3 border border-slate-200 rounded bg-white space-y-2"> <div class="flex justify-between items-center"> <label class="font-medium text-sm">Question ${editQuestionCounter}</label> <button type="button" onclick="removeQuestion('edit-q-${editQuestionCounter}')" class="text-red-500 text-xs"><i class="fas fa-times-circle"></i> Remove</button> </div> <textarea name="q-text" placeholder="Question Text" required class="w-full p-2 border border-slate-300 rounded"></textarea> <input type="text" name="q-img" placeholder="Image URL (Optional)" class="w-full p-2 border border-slate-300 rounded"> ${[...Array(5).keys()].map(i => ` <div class="flex items-center space-x-2"> <input type="radio" name="edit-q-correct-${editQuestionCounter}" value="${i}" required> <input type="text" name="q-option" placeholder="Option ${i+1}" required class="w-full p-2 border border-slate-300 rounded"> </div>`).join('')} <textarea name="q-explanation" placeholder="Explanation" required class="w-full p-2 border border-slate-300 rounded"></textarea> </div>`; questionsContainer.insertAdjacentHTML('beforeend', questionHTML); }
         window.closeEditExamModal = function() { document.getElementById('editExamModal').classList.add('hidden'); }
+        window.openEditBatchModal = function(batchId, batchName) { document.getElementById('editBatchId').value = batchId; document.getElementById('editBatchName').value = batchName; document.getElementById('editBatchModal').classList.remove('hidden'); }
+        window.closeEditBatchModal = function() { document.getElementById('editBatchModal').classList.add('hidden'); }
 
         // --- EXAM FORM DYNAMIC QUESTIONS ---
         let questionCounter = 0;
@@ -602,6 +642,7 @@
             document.getElementById('routineForm').addEventListener('submit', async function(e) { e.preventDefault(); const batchId = document.getElementById('routineBatchSelect').value; const content = document.getElementById('routineContent').value; const feedback = document.getElementById('routineFeedback'); if (!batchId) { feedback.innerHTML = `<p class="text-red-500">Please select a batch.</p>`; return; } await setRoutine(batchId, content); feedback.innerHTML = `<p class="text-green-600">Routine has been set.</p>`; this.reset(); setTimeout(() => feedback.innerHTML = '', 3000); });
             document.getElementById('examForm').addEventListener('submit', async function(e) { e.preventDefault(); const examData = { title: document.getElementById('examTitle').value, batchId: document.getElementById('examBatch').value, duration: parseInt(document.getElementById('examDuration').value), passPercent: parseInt(document.getElementById('examPassPercent').value), questions: [] }; const questionNodes = document.querySelectorAll('#questionsContainer > div'); if (questionNodes.length === 0) { alert('Please add at least one question.'); return; } let questionRadioCounter = 0; questionNodes.forEach((node) => { questionRadioCounter++; const question = { id: `q-${questionRadioCounter}`, text: node.querySelector('[name="q-text"]').value, imageUrl: node.querySelector('[name="q-img"]').value || null, options: Array.from(node.querySelectorAll('[name="q-option"]')).map(opt => opt.value), correctAnswer: parseInt(node.querySelector(`[name="q-correct-${questionRadioCounter}"]:checked`).value), explanation: node.querySelector('[name="q-explanation"]').value }; examData.questions.push(question); }); await addExam(examData); document.getElementById('examFeedback').innerHTML = `<p class="text-green-600">Exam created successfully.</p>`; this.reset(); document.getElementById('questionsContainer').innerHTML = ''; questionCounter = 0; });
             document.getElementById('editExamForm').addEventListener('submit', async function(e) { e.preventDefault(); const examId = document.getElementById('editExamId').value; const updatedData = { title: document.getElementById('editExamTitle').value, batchId: document.getElementById('editExamBatch').value, duration: parseInt(document.getElementById('editExamDuration').value), passPercent: parseInt(document.getElementById('editExamPassPercent').value), questions: [] }; const questionNodes = document.querySelectorAll('#editQuestionsContainer > div'); questionNodes.forEach((node, index) => { const radioName = node.querySelector('input[type="radio"]').name; const question = { id: `q-${index}`, text: node.querySelector('[name="q-text"]').value, imageUrl: node.querySelector('[name="q-img"]').value || null, options: Array.from(node.querySelectorAll('[name="q-option"]')).map(opt => opt.value), correctAnswer: parseInt(node.querySelector(`[name="${radioName}"]:checked`).value), explanation: node.querySelector('[name="q-explanation"]').value }; updatedData.questions.push(question); }); await updateExam(examId, updatedData); closeEditExamModal(); });
+            document.getElementById('editBatchForm').addEventListener('submit', async function(e) { e.preventDefault(); const batchId = document.getElementById('editBatchId').value; const newName = document.getElementById('editBatchName').value; await updateBatch(batchId, newName); closeEditBatchModal(); });
         });
 
         async function handleSearch() { const queryText = document.getElementById('searchInput').value.toLowerCase(); const type = document.getElementById('searchType').value; let filteredStudents = allStudents; if (queryText) { if (type === 'name') { filteredStudents = allStudents.filter(s => s.name.toLowerCase().includes(queryText)); } else if (type === 'email') { filteredStudents = allStudents.filter(s => s.email.toLowerCase().includes(queryText)); } else if (type === 'batch') { const matchingBatches = allBatches.filter(b => b.name.toLowerCase().includes(queryText)); const matchingBatchIds = matchingBatches.map(b => b.id); filteredStudents = allStudents.filter(s => matchingBatchIds.includes(s.batchId)); } } renderStudentList(filteredStudents); }
@@ -617,7 +658,7 @@
             
             let studentHTML = '<p class="text-sm text-slate-500 pl-4 py-2">No matching students found.</p>';
             if (filtered.length > 0) {
-                studentHTML = filtered.map(s => `<div class="text-sm pl-4 py-2 border-t">${s.name}</div>`).join('');
+                studentHTML = filtered.map(s => `<div class="flex justify-between items-center text-sm pl-4 py-2 border-t"><span>${s.name}</span><div class="flex space-x-3"><button onclick="openEditModal('${s.id}')" class="text-slate-400 hover:text-blue-600"><i class="fas fa-pencil-alt"></i></button><button onclick="handleDeleteStudent('${s.id}')" class="text-slate-400 hover:text-red-600"><i class="fas fa-trash"></i></button></div></div>`).join('');
             }
             container.innerHTML = studentHTML;
         }
@@ -625,6 +666,7 @@
         window.handleDeleteStudent = async function(id) { await deleteStudent(id); }
         window.handleDeleteAnnouncement = async function(id) { await deleteAnnouncement(id); }
         window.handleDeleteExam = async function(id) { await deleteExam(id); }
+        window.handleDeleteBatch = async function(id) { await deleteBatch(id); }
         window.logoutStudent = function() { currentStudent = null; showView('mainView'); }
         window.logoutAdmin = function() { signOut(auth); }
         
